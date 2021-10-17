@@ -1,0 +1,9 @@
+# === DJANGO ===
+
+django-admin startproject NombreProyecto
+
+# === Activando el proyecto ===
+python manage.py migrate
+
+# === Ejecutando el servidor ligero ===
+python manage.py runserver
