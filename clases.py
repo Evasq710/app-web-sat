@@ -127,3 +127,16 @@ class DTE:
             str_correlativo += "0"
         str_correlativo += str(correlativo)
         self.num_autorizacion = int(f"{self.fecha_concatenada}{str_correlativo}")
+
+class Autorizacion:
+    def __init__(self, fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores):
+        self.fecha = fecha
+        self.total_facturas = total_facturas
+        self.errores_nit_emisor = errores_nit_emisor
+        self.errores_nit_receptor = errores_nit_receptor
+        self.errores_iva = errores_iva
+        self.errores_total = errores_total
+        self.errores_referencia = errores_referencia
+        self.facturas_sin_error = facturas_sin_error
+        self.total_emisores = total_emisores
+        self.total_receptores = total_receptores

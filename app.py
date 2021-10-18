@@ -7,6 +7,7 @@ app = Flask(__name__)
 CORS(app)
 
 solicitudes_DTE = []
+autorizaciones = []
 
 def is_number(caracter):
     if ord(caracter) >= 48 and ord(caracter) <= 57:
@@ -164,10 +165,8 @@ def carga_archivo():
     bubbleSort_fecha()
     bubbleSort_hora()
     correlativos()
+    resumen_autorizaciones()
     crear_archivo_salida()
-
-    for solicitud in solicitudes_DTE:
-        print(solicitud.fecha, solicitud.hora_completa, solicitud.num_autorizacion)
 
     return jsonify({'nuevas': contador, 'total_guardadas': len(solicitudes_DTE)})
 
@@ -227,8 +226,57 @@ def correlativos():
                 correlativo += 1
                 solicitud.crear_num_autorizacion(correlativo)
 
+def resumen_autorizaciones():
+    global solicitudes_DTE
+    global autorizaciones
+    autorizaciones = []
+    fechas = []
+    for solicitud in solicitudes_DTE:
+        if fechas.count(solicitud.fecha) == 0:
+            fechas.append(solicitud.fecha)
+    for fecha in fechas:
+        total_facturas = 0
+        errores_nit_emisor = 0
+        errores_nit_receptor = 0
+        errores_iva = 0
+        errores_total = 0
+        errores_referencia = 0
+        facturas_sin_error = 0
+        emisores = []
+        receptores = []
+        hay_error = False
+        facturas_con_error = 0
+        for solicitud in solicitudes_DTE:
+            if solicitud.fecha == fecha:
+                total_facturas += 1
+                if solicitud.error_nit_emisor:
+                    errores_nit_emisor += 1
+                    hay_error = True
+                if solicitud.error_nit_receptor:
+                    errores_nit_receptor += 1
+                    hay_error = True
+                if solicitud.error_iva:
+                    errores_iva += 1
+                    hay_error = True
+                if solicitud.error_total:
+                    errores_total += 1
+                    hay_error = True
+                if solicitud.error_referencia_doble:
+                    errores_referencia += 1
+                    hay_error = True
+                if hay_error:
+                    facturas_con_error += 1
+                if emisores.count(solicitud.nit_emisor) == 0 and not solicitud.error_nit_emisor:
+                    emisores.append(solicitud.nit_emisor)
+                if receptores.count(solicitud.nit_receptor) == 0 and not solicitud.error_nit_receptor:
+                    receptores.append(solicitud.nit_receptor)
+        facturas_sin_error = total_facturas - facturas_con_error
+        total_emisores = len(emisores)
+        total_receptores = len(receptores)
+        autorizaciones.append(Autorizacion(fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores))
+    
 def crear_archivo_salida():
-    pass
+    xml = ""
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
