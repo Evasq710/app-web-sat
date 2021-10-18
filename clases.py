@@ -1,11 +1,11 @@
 class DTE:
-    def __init__(self, lugar, dia, mes, year, hora, referencia, nit_emisor, nit_receptor, valor, iva, total):
+    def __init__(self, lugar, dia, mes, year, hora, minutos, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total):
         self.lugar = lugar
-        self.dia = dia
-        self.mes = mes
-        self.year = year
-        self.fecha = f"{str(dia)}/{str(mes)}/{str(year)}"
-        self.hora = hora
+        self.fecha = f"{dia}/{mes}/{year}"
+        self.fecha_concatenada = int(f"{year}{mes}{dia}")
+        self.hora = int(hora)
+        self.minutos = int(minutos)
+        self.hora_completa = hora_completa
         self.referencia = referencia
         self.nit_emisor = nit_emisor
         self.nit_receptor = nit_receptor
@@ -120,3 +120,10 @@ class DTE:
         else:
             self.error_iva = True
             self.error_total = True
+    
+    def crear_num_autorizacion(self, correlativo):
+        str_correlativo = ""
+        for i in range(8 - len(str(correlativo))):
+            str_correlativo += "0"
+        str_correlativo += str(correlativo)
+        self.num_autorizacion = int(f"{self.fecha_concatenada}{str_correlativo}")

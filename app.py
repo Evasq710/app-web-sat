@@ -32,7 +32,9 @@ def carga_archivo():
             dia = ""
             mes = ""
             year = ""
+            hora_completa = ""
             hora = ""
+            minutos = ""
             estado = "q0"
             lexema_actual = ""
             for caracter in tiempo:
@@ -61,7 +63,7 @@ def carga_archivo():
                         estado = "q4"
                 elif estado == "q4":
                     if caracter == "/":
-                        dia = int(lexema_actual)
+                        dia = lexema_actual
                         lexema_actual = ""
                         estado = "q5"
                 elif estado == "q5":
@@ -74,7 +76,7 @@ def carga_archivo():
                         estado = "q7"
                 elif estado == "q7":
                     if caracter == "/":
-                        mes = int(lexema_actual)
+                        mes = lexema_actual
                         lexema_actual = ""
                         estado = "q8"
                 elif estado == "q8":
@@ -95,15 +97,17 @@ def carga_archivo():
                         estado = "q12"
                 elif estado == "q12":
                     if ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32:
-                        year = int(lexema_actual)
+                        year = lexema_actual
                         lexema_actual = ""
                         estado = "q13"
                 elif estado == "q13":
                     if is_number(caracter):
+                        hora += caracter
                         lexema_actual += caracter
                         estado = "q14"
                 elif estado == "q14":
                     if is_number(caracter):
+                        hora += caracter
                         lexema_actual += caracter
                         estado = "q15"
                 elif estado == "q15":
@@ -112,10 +116,12 @@ def carga_archivo():
                         estado = "q16"
                 elif estado == "q16":
                     if is_number(caracter):
+                        minutos += caracter
                         lexema_actual += caracter
                         estado = "q17"
                 elif estado == "q17":
                     if is_number(caracter):
+                        minutos += caracter
                         lexema_actual += caracter
                         estado = "q18"
                 elif estado == "q18":
@@ -130,14 +136,14 @@ def carga_archivo():
                         lexema_actual += caracter
                     elif caracter == ".":
                         lexema_actual += caracter
-            hora = lexema_actual.lower()
+            hora_completa = lexema_actual.lower()
             referencia = solicitud.find('REFERENCIA').text.replace(' ', '')
             nit_emisor = solicitud.find('NIT_EMISOR').text.replace(' ', '').replace('-', '')
             nit_receptor = solicitud.find('NIT_RECEPTOR').text.replace(' ', '').replace('-', '')
             valor = solicitud.find('VALOR').text.replace(' ', '')
             iva = solicitud.find('IVA').text.replace(' ', '')
             total = solicitud.find('TOTAL').text.replace(' ', '')
-            solicitudes_DTE.append(DTE(lugar, dia, mes, year, hora, referencia, nit_emisor, nit_receptor, valor, iva, total))
+            solicitudes_DTE.append(DTE(lugar, dia, mes, year,hora, minutos, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total))
             contador += 1
         except:
             continue
@@ -155,7 +161,74 @@ def carga_archivo():
             if solicitud.referencia == repetida:
                 solicitud.error_referencia_doble = True
 
+    bubbleSort_fecha()
+    bubbleSort_hora()
+    correlativos()
+    crear_archivo_salida()
+
+    for solicitud in solicitudes_DTE:
+        print(solicitud.fecha, solicitud.hora_completa, solicitud.num_autorizacion)
+
     return jsonify({'nuevas': contador, 'total_guardadas': len(solicitudes_DTE)})
+
+def bubbleSort_fecha():
+    global solicitudes_DTE
+    solicitudes_aux = None
+    while (True):
+        cambios = False
+        for i in range(1, len(solicitudes_DTE)):
+            if solicitudes_DTE[i].fecha_concatenada < solicitudes_DTE[i-1].fecha_concatenada:
+                solicitudes_aux = solicitudes_DTE[i]
+                solicitudes_DTE[i] = solicitudes_DTE[i-1] #pasando el mayor una posición adelante
+                solicitudes_DTE[i-1] = solicitudes_aux #pasando al menor una posición atras
+                cambios = True
+        if not cambios: #lista ordenada
+            break
+
+def bubbleSort_hora():
+    global solicitudes_DTE
+    solicitudes_aux = None
+    for solicitud in solicitudes_DTE:
+        fecha = solicitud.fecha_concatenada
+        while (True):
+            cambios = False
+            for i in range(1, len(solicitudes_DTE)):
+                if solicitudes_DTE[i].hora < solicitudes_DTE[i-1].hora and solicitudes_DTE[i-1].fecha_concatenada == fecha and solicitudes_DTE[i].fecha_concatenada == fecha:
+                    solicitudes_aux = solicitudes_DTE[i]
+                    solicitudes_DTE[i] = solicitudes_DTE[i-1] #pasando el mayor una posición adelante
+                    solicitudes_DTE[i-1] = solicitudes_aux #pasando al menor una posición atras
+                    cambios = True
+            if not cambios: #lista ordenada
+                break
+    for solicitud in solicitudes_DTE:
+        fecha = solicitud.fecha_concatenada
+        hora = solicitud.hora
+        while (True):
+            cambios = False
+            for i in range(1, len(solicitudes_DTE)):
+                if solicitudes_DTE[i].minutos < solicitudes_DTE[i-1].minutos and solicitudes_DTE[i-1].hora == hora and solicitudes_DTE[i].hora == hora and solicitudes_DTE[i-1].fecha_concatenada == fecha and solicitudes_DTE[i].fecha_concatenada == fecha:
+                    solicitudes_aux = solicitudes_DTE[i]
+                    solicitudes_DTE[i] = solicitudes_DTE[i-1] #pasando el mayor una posición adelante
+                    solicitudes_DTE[i-1] = solicitudes_aux #pasando al menor una posición atras
+                    cambios = True
+            if not cambios: #lista ordenada
+                break
+
+def correlativos():
+    global solicitudes_DTE
+    fechas = []
+    for solicitud in solicitudes_DTE:
+        if fechas.count(solicitud.fecha_concatenada) == 0:
+            fechas.append(solicitud.fecha_concatenada)
+    for fecha in fechas:
+        correlativo = 0
+        for solicitud in solicitudes_DTE:
+            if solicitud.fecha_concatenada == fecha:
+                correlativo += 1
+                solicitud.crear_num_autorizacion(correlativo)
+
+def crear_archivo_salida():
+    pass
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
