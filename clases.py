@@ -4,20 +4,34 @@ class DTE:
         self.dia = dia
         self.mes = mes
         self.year = year
+        self.fecha = f"{str(dia)}/{str(mes)}/{str(year)}"
         self.hora = hora
         self.referencia = referencia
         self.nit_emisor = nit_emisor
         self.nit_receptor = nit_receptor
-        self.valor = valor
-        self.iva = iva
-        self.total = total
+        try:
+            self.error_valor = False
+            self.valor = float(valor)
+            if self.valor < 0:
+                self.error_valor = True
+        except:
+            self.error_valor = True
+        try:
+            self.error_iva = False
+            self.iva = float(iva)
+        except:
+            self.error_iva = True
+        try:
+            self.error_total = False
+            self.total = float(total)
+        except:
+            self.error_total = True
         self.error_referencia_doble = False
         self.error_nit_emisor = False
         self.error_nit_receptor = False
-        self.error_iva = False
-        self.error_total = False
         self.validar_nit_emisor()
         self.validar_nit_receptor()
+        self.validar_iva_total()
     
     def validar_nit_emisor(self):
         nit_inverso = self.nit_emisor[::-1]
@@ -92,3 +106,17 @@ class DTE:
                 self.error_nit_receptor = True
         else:
             self.error_nit_receptor = True
+
+    def validar_iva_total(self):
+        if not self.error_valor:
+            iva = round(self.valor*0.12, 2)
+            if not self.error_iva:
+                if iva != self.iva:
+                    self.error_iva = True
+            total = iva + self.valor
+            if not self.error_total:
+                if total != self.total:
+                    self.error_total = True
+        else:
+            self.error_iva = True
+            self.error_total = True
