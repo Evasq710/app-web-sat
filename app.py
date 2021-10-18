@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from xml.etree import ElementTree as ET
-
-from jinja2.utils import object_type_repr
+from clases import *
 
 app = Flask(__name__)
 CORS(app)
 
+solicitudes_DTE = []
 
 def is_number(caracter):
     if ord(caracter) >= 48 and ord(caracter) <= 57:
@@ -20,9 +20,11 @@ def is_letter(caracter):
 
 @app.route('/carga_archivo', methods=['POST'])
 def carga_archivo():
+    global solicitudes_DTE
     entry = request.data.decode('utf-8')
     entrada = entry.replace('\n', '').replace('\r', '').replace('\t', '').upper()
     root_solicitudes = ET.fromstring(entrada)
+    contador = 0
     for solicitud in root_solicitudes.findall("DTE"):
         tiempo = solicitud.find('TIEMPO').text
         lugar = ""
@@ -129,26 +131,16 @@ def carga_archivo():
                     lexema_actual += caracter
         hora = lexema_actual.lower()
         referencia = solicitud.find('REFERENCIA').text.replace(' ', '')
-        nit_emisor = solicitud.find('NIT_EMISOR').text.replace(' ', '')
-        nit_receptor = solicitud.find('NIT_RECEPTOR').text.replace(' ', '')
+        nit_emisor = solicitud.find('NIT_EMISOR').text.replace(' ', '').replace('-', '')
+        nit_receptor = solicitud.find('NIT_RECEPTOR').text.replace(' ', '').replace('-', '')
         valor = solicitud.find('VALOR').text.replace(' ', '')
-        valor = float(valor)
         iva = solicitud.find('IVA').text.replace(' ', '')
-        iva = float(iva)
         total = solicitud.find('TOTAL').text.replace(' ', '')
-        total = float(iva)
-        print(lugar, end= ' ')
-        print(dia, end= ' / ')
-        print(mes, end= ' / ')
-        print(year, end= ' ')
-        print(hora, end= ' ')
-        print(referencia, end= ' ')
-        print(nit_emisor, end= ' ')
-        print(nit_receptor, end= ' ')
-        print(valor, end= ' ')
-        print(iva, end= ' ')
-        print(total)
-    return jsonify({'entrada': entrada})
+        solicitudes_DTE.append(DTE(lugar, dia, mes, year, hora, referencia, nit_emisor, nit_receptor, valor, iva, total))
+        contador += 1
+    for soli in solicitudes_DTE:
+        print(soli.error_nit_emisor, soli.error_nit_receptor)
+    return jsonify({'nuevas': contador, 'total_guardadas': len(solicitudes_DTE)})
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
