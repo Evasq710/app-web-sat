@@ -14,21 +14,26 @@ class DTE:
             self.valor = float(valor)
             if self.valor < 0:
                 self.error_valor = True
+                self.factura_aprobada = False
         except:
             self.error_valor = True
+            self.factura_aprobada = False
         try:
             self.error_iva = False
             self.iva = float(iva)
         except:
             self.error_iva = True
+            self.factura_aprobada = False
         try:
             self.error_total = False
             self.total = float(total)
         except:
             self.error_total = True
+            self.factura_aprobada = False
         self.error_referencia_doble = False
         self.error_nit_emisor = False
         self.error_nit_receptor = False
+        self.factura_aprobada = True
         self.validar_nit_emisor()
         self.validar_nit_receptor()
         self.validar_iva_total()
@@ -47,6 +52,7 @@ class DTE:
                     pos += 1
                 except:
                     self.error_nit_emisor = True
+                    self.factura_aprobada = False
                     return
         # Suma de productos
         suma = 0
@@ -62,13 +68,17 @@ class DTE:
             try:
                 if modulo2 != int(nit_inverso[0]):
                     self.error_nit_emisor = True
+                    self.factura_aprobada = False
             except:
                 self.error_nit_emisor = True
+                self.factura_aprobada = False
         elif modulo2 == 10:
             if nit_inverso[0] != "K":
                 self.error_nit_emisor = True
+                self.factura_aprobada = False
         else:
             self.error_nit_emisor = True
+            self.factura_aprobada = False
     
     def validar_nit_receptor(self):
         nit_inverso = self.nit_receptor[::-1]
@@ -84,6 +94,7 @@ class DTE:
                     pos += 1
                 except:
                     self.error_nit_emisor = True
+                    self.factura_aprobada = False
                     return
         # Suma de productos
         suma = 0
@@ -99,13 +110,17 @@ class DTE:
             try:
                 if modulo2 != int(nit_inverso[0]):
                     self.error_nit_receptor = True
+                    self.factura_aprobada = False
             except:
                 self.error_nit_receptor = True
+                self.factura_aprobada = False
         elif modulo2 == 10:
             if nit_inverso[0] != "K":
                 self.error_nit_receptor = True
+                self.factura_aprobada = False
         else:
             self.error_nit_receptor = True
+            self.factura_aprobada = False
 
     def validar_iva_total(self):
         if not self.error_valor:
@@ -113,13 +128,16 @@ class DTE:
             if not self.error_iva:
                 if iva != self.iva:
                     self.error_iva = True
+                    self.factura_aprobada = False
             total = iva + self.valor
             if not self.error_total:
                 if total != self.total:
                     self.error_total = True
+                    self.factura_aprobada = False
         else:
             self.error_iva = True
             self.error_total = True
+            self.factura_aprobada = False
     
     def crear_num_autorizacion(self, correlativo):
         str_correlativo = ""
@@ -129,7 +147,7 @@ class DTE:
         self.num_autorizacion = int(f"{self.fecha_concatenada}{str_correlativo}")
 
 class Autorizacion:
-    def __init__(self, fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores):
+    def __init__(self, fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores, lista_facturas_aprobadas):
         self.fecha = fecha
         self.total_facturas = total_facturas
         self.errores_nit_emisor = errores_nit_emisor
@@ -140,3 +158,4 @@ class Autorizacion:
         self.facturas_sin_error = facturas_sin_error
         self.total_emisores = total_emisores
         self.total_receptores = total_receptores
+        self.lista_facturas_aprobadas = lista_facturas_aprobadas

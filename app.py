@@ -7,7 +7,6 @@ app = Flask(__name__)
 CORS(app)
 
 solicitudes_DTE = []
-autorizaciones = []
 
 def is_number(caracter):
     if ord(caracter) >= 48 and ord(caracter) <= 57:
@@ -161,12 +160,12 @@ def carga_archivo():
         for solicitud in solicitudes_DTE:
             if solicitud.referencia == repetida:
                 solicitud.error_referencia_doble = True
+                solicitud.factura_aprobada = False
 
     bubbleSort_fecha()
     bubbleSort_hora()
     correlativos()
     resumen_autorizaciones()
-    crear_archivo_salida()
 
     return jsonify({'nuevas': contador, 'total_guardadas': len(solicitudes_DTE)})
 
@@ -223,12 +222,12 @@ def correlativos():
         correlativo = 0
         for solicitud in solicitudes_DTE:
             if solicitud.fecha_concatenada == fecha:
-                correlativo += 1
-                solicitud.crear_num_autorizacion(correlativo)
+                if solicitud.factura_aprobada:
+                    correlativo += 1
+                    solicitud.crear_num_autorizacion(correlativo)
 
 def resumen_autorizaciones():
     global solicitudes_DTE
-    global autorizaciones
     autorizaciones = []
     fechas = []
     for solicitud in solicitudes_DTE:
@@ -273,10 +272,47 @@ def resumen_autorizaciones():
         facturas_sin_error = total_facturas - facturas_con_error
         total_emisores = len(emisores)
         total_receptores = len(receptores)
-        autorizaciones.append(Autorizacion(fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores))
+        lista_facturas_aprobadas = []
+        for solicitud in solicitudes_DTE:
+            if solicitud.fecha == fecha and solicitud.factura_aprobada:
+                lista_facturas_aprobadas.append(solicitud)
+        autorizaciones.append(Autorizacion(fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores, lista_facturas_aprobadas))
+    crear_archivo_salida(autorizaciones)
     
-def crear_archivo_salida():
-    xml = ""
+def crear_archivo_salida(autorizaciones):
+    xml = "<LISTAAUTORIZACIONES>\n"
+    for autorizacion in autorizaciones:
+        xml += "\t<AUTORIZACION>\n"
+        xml += f"\t\t<FECHA>{autorizacion.fecha}</FECHA>\n"
+        xml += f"\t\t<FACTURAS_RECIBIDAS>{autorizacion.total_facturas}</FACTURAS_RECIBIDAS>\n"
+        xml += "\t\t<ERRORES>\n"
+        xml += f"\t\t\t<NIT_EMISOR>{autorizacion.errores_nit_emisor}</NIT_EMISOR>\n"
+        xml += f"\t\t\t<NIT_RECEPTOR>{autorizacion.errores_nit_receptor}</NIT_RECEPTOR>\n"
+        xml += f"\t\t\t<IVA>{autorizacion.errores_iva}</IVA>\n"
+        xml += f"\t\t\t<TOTAL>{autorizacion.errores_total}</TOTAL>\n"
+        xml += f"\t\t\t<REFERENCIA_DUPLICADA>{autorizacion.errores_referencia}</REFERENCIA_DUPLICADA>\n"
+        xml += "\t\t</ERRORES>\n"
+        xml += f"\t\t<FACTURAS_CORRECTAS>{autorizacion.facturas_sin_error}</FACTURAS_CORRECTAS>\n"
+        xml += f"\t\t<CANTIDAD_EMISORES>{autorizacion.total_emisores}</CANTIDAD_EMISORES>\n"
+        xml += f"\t\t<CANTIDAD_RECEPTORES>{autorizacion.total_receptores}</CANTIDAD_RECEPTORES>\n"
+        xml += "\t\t<LISTADO_AUTORIZACIONES>\n"
+        for factura in autorizacion.lista_facturas_aprobadas:
+            xml += "\t\t\t<APROBACION>\n"
+            xml += f'\t\t\t\t<NIT_EMISOR ref="{factura.referencia}">{factura.nit_emisor}</NIT_EMISOR>\n'
+            xml += f'\t\t\t\t<CODIGO_APROBACION>{factura.num_autorizacion}</CODIGO_APROBACION>\n'
+            xml += "\t\t\t</APROBACION>\n"
+        xml += "\t\t</LISTADO_AUTORIZACIONES>\n"
+        xml += "\t</AUTORIZACION>\n"
+    xml += '</LISTAAUTORIZACIONES>'
+    try:
+        root = ET.fromstring(xml)
+        tree_xml_salida = ET.ElementTree(element=root)
+        tree_xml_salida.write("autorizaciones.xml", encoding="utf-8", xml_declaration=True)
+        print("> El archivo XML se creo exitosamente.\n")
+    except Exception as e:
+        print(e)
+        print("> No pudo crearse el archivo XML en la ruta indicada.\n")
+    
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
