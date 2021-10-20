@@ -7,6 +7,37 @@ app = Flask(__name__)
 CORS(app)
 
 solicitudes_DTE = []
+autorizaciones_global = []
+
+@app.route('/actualizar')
+def actualizar_aprobaciones():
+    global autorizaciones_global
+    tree_xml_autorizaciones = ET.parse('autorizaciones.xml')
+    root_autorizaciones = tree_xml_autorizaciones.getroot()
+    for autorizacion in root_autorizaciones:
+        fecha = autorizacion.find('FECHA').text
+        facturas_recibidas = int(autorizacion.find('FACTURAS_RECIBIDAS').text)
+        errores_nit_emisor = int(autorizacion.find('ERRORES').find('NIT_EMISOR').text)
+        errores_nit_receptor = int(autorizacion.find('ERRORES').find('NIT_RECEPTOR').text)
+        errores_iva = int(autorizacion.find('ERRORES').find('IVA').text)
+        errores_total = int(autorizacion.find('ERRORES').find('TOTAL').text)
+        errores_ref_doble = int(autorizacion.find('ERRORES').find('REFERENCIA_DUPLICADA').text)
+        facturas_correctas = int(autorizacion.find('FACTURAS_CORRECTAS').text)
+        emisores = int(autorizacion.find('CANTIDAD_EMISORES').text)
+        receptores = int(autorizacion.find('CANTIDAD_RECEPTORES').text)
+        lista_aprobaciones = []
+        for aprobacion in autorizacion.find('LISTADO_AUTORIZACIONES').findall('APROBACION'):
+            referencia = aprobacion.find('NIT_EMISOR').attrib
+            nit_emisor = aprobacion.find('NIT_EMISOR').text
+            codigo_aprobacion = int(aprobacion.find('CODIGO_APROBACION').text)
+            lista_aprobaciones.append({'referencia': referencia, 'nit_emisor': nit_emisor, 'codigo_aprobacion': codigo_aprobacion})
+        total_aprobaciones = int(autorizacion.find('LISTADO_AUTORIZACIONES').find('TOTAL_APROBACIONES').text)
+        autorizaciones_global.append(Autorizacion(
+            fecha, facturas_recibidas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_ref_doble,
+            facturas_correctas, emisores, receptores, lista_aprobaciones, total_aprobaciones
+            ))
+            
+    return jsonify({'autorizaciones': len(autorizaciones_global)})
 
 def is_number(caracter):
     if ord(caracter) >= 48 and ord(caracter) <= 57:
@@ -21,6 +52,7 @@ def is_letter(caracter):
 @app.route('/carga_archivo', methods=['POST'])
 def carga_archivo():
     global solicitudes_DTE
+    solicitudes_DTE = []
     entry = request.data.decode('utf-8')
     entrada = entry.replace('\n', '').replace('\r', '').replace('\t', '').upper()
     root_solicitudes = ET.fromstring(entrada)
@@ -33,8 +65,6 @@ def carga_archivo():
             mes = ""
             year = ""
             hora_completa = ""
-            hora = ""
-            minutos = ""
             estado = "q0"
             lexema_actual = ""
             for caracter in tiempo:
@@ -102,12 +132,10 @@ def carga_archivo():
                         estado = "q13"
                 elif estado == "q13":
                     if is_number(caracter):
-                        hora += caracter
                         lexema_actual += caracter
                         estado = "q14"
                 elif estado == "q14":
                     if is_number(caracter):
-                        hora += caracter
                         lexema_actual += caracter
                         estado = "q15"
                 elif estado == "q15":
@@ -116,12 +144,10 @@ def carga_archivo():
                         estado = "q16"
                 elif estado == "q16":
                     if is_number(caracter):
-                        minutos += caracter
                         lexema_actual += caracter
                         estado = "q17"
                 elif estado == "q17":
                     if is_number(caracter):
-                        minutos += caracter
                         lexema_actual += caracter
                         estado = "q18"
                 elif estado == "q18":
@@ -143,7 +169,7 @@ def carga_archivo():
             valor = solicitud.find('VALOR').text.replace(' ', '')
             iva = solicitud.find('IVA').text.replace(' ', '')
             total = solicitud.find('TOTAL').text.replace(' ', '')
-            solicitudes_DTE.append(DTE(lugar, dia, mes, year,hora, minutos, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total))
+            solicitudes_DTE.append(DTE(lugar, dia, mes, year, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total))
             contador += 1
         except:
             continue
@@ -163,11 +189,10 @@ def carga_archivo():
                 solicitud.factura_aprobada = False
 
     bubbleSort_fecha()
-    bubbleSort_hora()
     correlativos()
     resumen_autorizaciones()
 
-    return jsonify({'nuevas': contador, 'total_guardadas': len(solicitudes_DTE)})
+    return jsonify({'solicitudes_recibidas': contador, 'total_analizadas': len(solicitudes_DTE)})
 
 def bubbleSort_fecha():
     global solicitudes_DTE
@@ -182,35 +207,6 @@ def bubbleSort_fecha():
                 cambios = True
         if not cambios: #lista ordenada
             break
-
-def bubbleSort_hora():
-    global solicitudes_DTE
-    solicitudes_aux = None
-    for solicitud in solicitudes_DTE:
-        fecha = solicitud.fecha_concatenada
-        while (True):
-            cambios = False
-            for i in range(1, len(solicitudes_DTE)):
-                if solicitudes_DTE[i].hora < solicitudes_DTE[i-1].hora and solicitudes_DTE[i-1].fecha_concatenada == fecha and solicitudes_DTE[i].fecha_concatenada == fecha:
-                    solicitudes_aux = solicitudes_DTE[i]
-                    solicitudes_DTE[i] = solicitudes_DTE[i-1] #pasando el mayor una posición adelante
-                    solicitudes_DTE[i-1] = solicitudes_aux #pasando al menor una posición atras
-                    cambios = True
-            if not cambios: #lista ordenada
-                break
-    for solicitud in solicitudes_DTE:
-        fecha = solicitud.fecha_concatenada
-        hora = solicitud.hora
-        while (True):
-            cambios = False
-            for i in range(1, len(solicitudes_DTE)):
-                if solicitudes_DTE[i].minutos < solicitudes_DTE[i-1].minutos and solicitudes_DTE[i-1].hora == hora and solicitudes_DTE[i].hora == hora and solicitudes_DTE[i-1].fecha_concatenada == fecha and solicitudes_DTE[i].fecha_concatenada == fecha:
-                    solicitudes_aux = solicitudes_DTE[i]
-                    solicitudes_DTE[i] = solicitudes_DTE[i-1] #pasando el mayor una posición adelante
-                    solicitudes_DTE[i-1] = solicitudes_aux #pasando al menor una posición atras
-                    cambios = True
-            if not cambios: #lista ordenada
-                break
 
 def correlativos():
     global solicitudes_DTE

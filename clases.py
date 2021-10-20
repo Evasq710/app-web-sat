@@ -1,10 +1,8 @@
 class DTE:
-    def __init__(self, lugar, dia, mes, year, hora, minutos, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total):
+    def __init__(self, lugar, dia, mes, year, hora_completa, referencia, nit_emisor, nit_receptor, valor, iva, total):
         self.lugar = lugar
         self.fecha = f"{dia}/{mes}/{year}"
         self.fecha_concatenada = int(f"{year}{mes}{dia}")
-        self.hora = int(hora)
-        self.minutos = int(minutos)
         self.hora_completa = hora_completa
         self.referencia = referencia
         self.nit_emisor = nit_emisor
@@ -147,7 +145,7 @@ class DTE:
         self.num_autorizacion = int(f"{self.fecha_concatenada}{str_correlativo}")
 
 class Autorizacion:
-    def __init__(self, fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores, lista_facturas_aprobadas):
+    def __init__(self, fecha, total_facturas, errores_nit_emisor, errores_nit_receptor, errores_iva, errores_total, errores_referencia, facturas_sin_error, total_emisores, total_receptores, lista_facturas_aprobadas, total_aprobaciones):
         self.fecha = fecha
         self.total_facturas = total_facturas
         self.errores_nit_emisor = errores_nit_emisor
@@ -159,3 +157,4 @@ class Autorizacion:
         self.total_emisores = total_emisores
         self.total_receptores = total_receptores
         self.lista_facturas_aprobadas = lista_facturas_aprobadas
+        self.total_aprobaciones = total_aprobaciones
