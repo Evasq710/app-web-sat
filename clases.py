@@ -7,6 +7,7 @@ class DTE:
         self.referencia = referencia
         self.nit_emisor = nit_emisor
         self.nit_receptor = nit_receptor
+        self.factura_aprobada = True
         try:
             self.error_valor = False
             self.valor = float(valor)
@@ -31,7 +32,6 @@ class DTE:
         self.error_referencia_doble = False
         self.error_nit_emisor = False
         self.error_nit_receptor = False
-        self.factura_aprobada = True
         self.validar_nit_emisor()
         self.validar_nit_receptor()
         self.validar_iva_total()
@@ -158,3 +158,49 @@ class Autorizacion:
         self.total_receptores = total_receptores
         self.lista_facturas_aprobadas = lista_facturas_aprobadas
         self.total_aprobaciones = total_aprobaciones
+        array_fecha = fecha.split('/')
+        array_fecha.reverse()
+        fecha_concatenada = ""
+        for time in array_fecha:
+            fecha_concatenada += time
+        self.fecha_concatenada = int(fecha_concatenada)
+    
+    def agregar_aprobaciones(self, nuevas_aprobaciones):
+        for aprobacion in nuevas_aprobaciones:
+            self.lista_facturas_aprobadas.append(aprobacion)
+        self.total_aprobaciones += len(nuevas_aprobaciones)
+        self.facturas_sin_error += len(nuevas_aprobaciones)
+        self.total_facturas += len(nuevas_aprobaciones)
+        self.actualizar_contadores_nit()
+
+    def actualizar_contadores_nit(self):
+        nit_emisores = []
+        for aprobacion in self.lista_facturas_aprobadas:
+            if nit_emisores.count(aprobacion.nit_emisor) == 0:
+                nit_emisores.append(aprobacion.nit_emisor)
+        nit_receptores = []
+        for aprobacion in self.lista_facturas_aprobadas:
+            if nit_receptores.count(aprobacion.nit_receptor_DB) == 0:
+                nit_receptores.append(aprobacion.nit_receptor_DB)
+        self.total_emisores = len(nit_emisores)                
+        self.total_receptores = len(nit_receptores)
+    
+    def agregar_errores(self, facturas_malas, e_emisor, e_receptor, e_iva, e_total, e_ref, num_emisores, num_receptores):
+        self.total_facturas += facturas_malas
+        self.errores_nit_emisor += e_emisor
+        self.errores_nit_receptor += e_receptor
+        self.errores_iva += e_iva
+        self.errores_total += e_total
+        self.errores_referencia += e_ref
+        self.total_emisores += num_emisores
+        self.total_receptores += num_receptores
+
+class Aprobacion:
+    def __init__(self, referencia, nit_emisor, codigo_aprobacion, nit_receptor_DB, valor_DB, iva_DB, total_DB):
+        self.referencia = referencia
+        self.nit_emisor = nit_emisor
+        self.codigo_aprobacion = codigo_aprobacion
+        self.nit_receptor_DB = nit_receptor_DB
+        self.valor_DB = valor_DB
+        self.iva_DB = iva_DB
+        self.total_DB = total_DB
