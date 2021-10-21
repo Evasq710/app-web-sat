@@ -54,7 +54,7 @@ ROOT_URLCONF = 'Frontend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['G:/Mi unidad/USAC/2021/2 Semestre/IPC 2/LAB IPC2/Proyecto 3/IPC2_Proyecto3_201900131/Frontend/Frontend/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
