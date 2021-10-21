@@ -16,6 +16,8 @@ solicitudes_rechazadas = []
 def actualizar_aprobaciones():
     global autorizaciones_global
     global data_JSON
+    with open('aprobaciones.json') as apr_JSON:
+        data_JSON = json.load(apr_JSON)
     tree_xml_autorizaciones = ET.parse('autorizaciones.xml')
     root_autorizaciones = tree_xml_autorizaciones.getroot()
     for autorizacion in root_autorizaciones:
@@ -30,11 +32,9 @@ def actualizar_aprobaciones():
         emisores = int(autorizacion.find('CANTIDAD_EMISORES').text)
         receptores = int(autorizacion.find('CANTIDAD_RECEPTORES').text)
         lista_aprobaciones = []
-        with open('aprobaciones.json') as apr_JSON:
-            data_JSON = json.load(apr_JSON)
-        for autorizacion in data_JSON['autorizaciones']:
-            if autorizacion['fecha'] == fecha:
-                for aprobacion in autorizacion['aprobaciones']:
+        for aut_JSON in data_JSON['autorizaciones']:
+            if aut_JSON['fecha'] == fecha:
+                for aprobacion in aut_JSON['aprobaciones']:
                     referencia = aprobacion['referencia']
                     nit_emisor = aprobacion['nit_emisor']
                     codigo_aprobacion = aprobacion['codigo_aprobacion']
@@ -194,13 +194,17 @@ def carga_archivo():
     validacion_ref_dobles()
     bubbleSort_fecha()
     rechazar_solicitudes()
+    correctas = len(solicitudes_DTE)
+    incorrectas = len(solicitudes_rechazadas)
     correlativos()
     actualizar_errores()
     solo_errores()
     bubbleSort_fecha_autorizaciones()
+    crear_xml_salida()
+    crear_dataJSON()
 
-    return jsonify({'solicitudes_recibidas': contador, 'solicitudes_sin_analizar': len(solicitudes_DTE),
-    'rechazadas_sin_analizar': len(solicitudes_rechazadas), 'aut_total': len(autorizaciones_global)})
+    return jsonify({'solicitudes_recibidas': contador, 'facturas_correctas': correctas, 'facturas_malas': incorrectas,
+    'solicitudes_sin_analizar': len(solicitudes_DTE), 'rechazadas_sin_analizar': len(solicitudes_rechazadas), 'aut_total': len(autorizaciones_global)})
 
 def validacion_ref_dobles():
     global solicitudes_DTE
@@ -252,35 +256,43 @@ def rechazar_solicitudes():
     global solicitudes_DTE
     global solicitudes_rechazadas
     solicitudes_rechazadas = []
+    list_index = []
     index = 0
     for solicitud in solicitudes_DTE:
         if not solicitud.factura_aprobada:
             solicitudes_rechazadas.append(solicitud)
-            del solicitudes_DTE[index]
+            list_index.append(index)
         else:
             index += 1
+    for i in list_index:
+        del solicitudes_DTE[i]
 
 def correlativos():
     global solicitudes_DTE
     global autorizaciones_global
-
     # Guardando las nuevas fechas, solo de las facturas aprobadas
     fechas_nuevas = []
     for solicitud in solicitudes_DTE:
+        print(solicitud.fecha)
         if fechas_nuevas.count(solicitud.fecha) == 0:
             fechas_nuevas.append(solicitud.fecha)
-
+    print(f"Fechas distintas: {len(fechas_nuevas)}")
     # Guardando fechas de las que ya se cuenta registro
     fechas_antiguas = []
     for autorizacion in autorizaciones_global:
         fechas_antiguas.append(autorizacion.fecha)
 
+    print(f"Solicitudes correctas: {len(solicitudes_DTE)}")
+
     for fecha in fechas_nuevas:
         if fechas_antiguas.count(fecha) > 0: # La fecha ya se encuentra registrada
+            print(fecha, "ya se encuentra registrada")
             for autorizacion in autorizaciones_global:
                 if fecha == autorizacion.fecha:
                     correlativo = autorizacion.total_aprobaciones
                     nuevas_aprobaciones = []
+                    list_index = []
+                    index = 0
                     for solicitud in solicitudes_DTE:
                         if solicitud.fecha == fecha:
                             correlativo += 1
@@ -288,20 +300,37 @@ def correlativos():
                             nuevas_aprobaciones.append(Aprobacion(
                                 solicitud.referencia, solicitud.nit_emisor, solicitud.num_autorizacion, solicitud.nit_receptor, solicitud.valor, solicitud.iva, solicitud.total
                             ))
-                            del solicitud
+                            list_index.append(index)
+                        else:
+                            index += 1
+                    for i in list_index:
+                        del solicitudes_DTE[i]
                     actualizar_aprobaciones(fecha, nuevas_aprobaciones)
                     break
         else: # La fecha no está registrada previamente
+            print(fecha, "no se encuentra registrada")
             correlativo = 0
             nuevas_aprobaciones = []
+            index = 0
+            list_index = []
+            iteraciones = 0
             for solicitud in solicitudes_DTE:
+                iteraciones += 1
                 if solicitud.fecha == fecha:
                     correlativo += 1
                     solicitud.crear_num_autorizacion(correlativo)
                     nuevas_aprobaciones.append(Aprobacion(
                         solicitud.referencia, solicitud.nit_emisor, solicitud.num_autorizacion, solicitud.nit_receptor, solicitud.valor, solicitud.iva, solicitud.total
                     ))
-                    del solicitud
+                    list_index.append(index)
+                    print(f"{solicitud.fecha} coincide. Index {index}")
+                else:
+                    print(f"{solicitud.fecha} NO coincide. Index {index}")
+                    index += 1
+            for i in list_index:
+                del solicitudes_DTE[i]
+            print(f"Iteraciones {iteraciones}")
+            print(f"Coinciden con {fecha} {correlativo} solicitudes")
             crear_autorizacion(fecha, nuevas_aprobaciones)
 
 def actualizar_aprobaciones(fecha, nuevas_aprobaciones):
@@ -323,16 +352,24 @@ def actualizar_aprobaciones(fecha, nuevas_aprobaciones):
                             "total_DB": aprobacion.total_DB
                         })
                     break
+    print(f"Se encontraron {len(nuevas_aprobaciones)} correctas con fecha {fecha}")
 
 def crear_autorizacion(fecha, nuevas_aprobaciones):
     global solicitudes_rechazadas
     global autorizaciones_global
     global data_JSON
     facturas_malas = []
+    index = 0
+    list_index = []
     for factura_mala in solicitudes_rechazadas:
         if factura_mala.fecha == fecha:
             facturas_malas.append(factura_mala)
-            del factura_mala
+            list_index.append(index)
+        else:
+            index += 1
+    for i in list_index:
+        del solicitudes_rechazadas[i]
+
     errores_nit_emisor = 0
     errores_nit_receptor = 0
     errores_iva = 0
@@ -380,6 +417,7 @@ def crear_autorizacion(fecha, nuevas_aprobaciones):
             "iva_DB": aprobacion.iva_DB,
             "total_DB": aprobacion.total_DB
         })
+    print(f"Se encontraron {len(nuevas_aprobaciones)} correctas con fecha {fecha}")
     data_JSON['autorizaciones'].append({"fecha": fecha, "aprobaciones": aprobaciones})
 
 def actualizar_errores():
@@ -405,6 +443,8 @@ def actualizar_errores():
                     errores_referencia = 0
                     nit_emisores = []
                     nit_receptores = []
+                    index = 0
+                    list_index = []
                     for factura_rechazada in solicitudes_rechazadas:
                         if factura_rechazada.fecha == fecha:
                             facturas_malas += 1
@@ -424,7 +464,11 @@ def actualizar_errores():
                             if not factura_rechazada.error_nit_receptor:
                                 if nit_receptores.count(factura_rechazada.nit_receptor) == 0:
                                     nit_receptores.append(factura_rechazada.nit_receptor)
-                            del factura_rechazada
+                            list_index.append(index)
+                        else:
+                            index += 1
+                    for i in list_index:
+                        del solicitudes_rechazadas[i]
                     autorizacion.agregar_errores(facturas_malas, errores_nit_emisor, errores_nit_receptor, errores_iva,
                     errores_total, errores_referencia, len(nit_emisores), len(nit_receptores))
                     break
@@ -438,10 +482,16 @@ def solo_errores():
             fechas.append(factura.fecha)
     for fecha in fechas:
         facturas_malas = []
+        index = 0
+        list_index = []
         for factura_mala in solicitudes_rechazadas:
             if factura_mala.fecha == fecha:
                 facturas_malas.append(factura_mala)
-                del factura_mala
+                list_index.append(index)
+            else:
+                index += 1
+        for i in list_index:
+            del solicitudes_rechazadas[i]
         errores_nit_emisor = 0
         errores_nit_receptor = 0
         errores_iva = 0
@@ -517,20 +567,20 @@ def crear_xml_salida():
         root = ET.fromstring(xml)
         tree_xml_salida = ET.ElementTree(element=root)
         tree_xml_salida.write("autorizaciones.xml", encoding="utf-8", xml_declaration=True)
-        print("> El archivo XML se creo exitosamente.\n")
+        print("> El archivo XML se creo exitosamente.")
     except Exception as e:
         print(e)
-        print("> No pudo crearse el archivo XML.\n")
+        print("> No pudo crearse el archivo XML.")
 
 def crear_dataJSON():
     global data_JSON
     try:
         with open('aprobaciones.json', 'w') as file_apr:
             json.dump(data_JSON, file_apr, indent=2)
-        print("> El archivo JSON se creo exitosamente.\n")
+        print("> El archivo JSON se creo exitosamente.")
     except Exception as e:
         print(e)
-        print("> No pudo crearse el archivo JSON.\n")
+        print("> No pudo crearse el archivo JSON.")
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
