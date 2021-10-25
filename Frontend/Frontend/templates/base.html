@@ -1,7 +1,7 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -22,19 +22,19 @@
 
     <title>Autorizaciones DTE</title>
 </head>
-<body>
+<body class="d-flex flex-column h-100">
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">      
           <div class="collapse navbar-collapse" id="navbarColor01">
             <ul class="navbar-nav me-auto">
               <li class="nav-item">
-                <a class="nav-link active" href="">Home
+                <a class="nav-link active" href="/../home/">Home
                   <span class="visually-hidden">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">Cargar Archivo</a>
+                <a class="nav-link" href="/../load_file/">Cargar Archivo</a>
               </li>
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Peticiones</a>
@@ -65,10 +65,16 @@
 
         {% endblock %}
     </div>
-    <footer>
+
+    <footer class="footer mt-auto py-3">
         <p>Elías Abraham Vasquez Soto - 201900131</p>
         <p>Proyecto 3 - Laboratorio Introducción a la Programación y Computación E</p>
         <img src="{% static 'images/logo_usac.png' %}" width="220" height="60"/>
     </footer>
+    
+    {% block js %}
+
+    {% endblock %}
+
 </body>
 </html>

@@ -1,0 +1,25 @@
+<script>
+    function stringXML(){
+        try{
+            let archivo = document.getElementById('solicitudes_xml').files[0]
+            if (archivo['type'] == "text/xml"){
+                const reader = new FileReader()
+                reader.addEventListener('load', (event) => {
+                    var textArea = document.getElementById('solicitudes')
+                    textArea.innerHTML = event.target.result
+                    alert("El archivo XML se ha cargado correctamente.")
+                })
+                reader.readAsText(archivo, 'UTF-8')
+            } else {
+                alert("El archivo debe encontrarse en formato XML.")
+            }
+        } catch(error){
+            console.log(error)
+            alert("No ha sido posible realizar la carga de solicitudes XML. Ver consola")
+        }
+    }
+
+    function cargaSolicitudesXML(){
+        
+    }
+</script>

@@ -5,19 +5,15 @@ header {
 
 .container {
     text-align: center;
+    margin-bottom: 70px;
 }
 
 footer {
     color: white;
     line-height: 10px;
     text-align: center;
-    padding-top: 20px;
-    padding-bottom: 5px;
     font-size: 15px;
     font-family: 'Lato', sans-serif;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    background: rgba(4, 67, 119, 0.5);
+    background: rgba(1, 11, 19, 0.4);
     /* background-image: url("../images/footer.png"); */
 }
