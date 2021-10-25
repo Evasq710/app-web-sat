@@ -2,4 +2,19 @@
 
 {% block content %}
     <h1>Bienvenido</h1>
+    <button type="button" class="btn btn-primary" style="margin-top: 40px;" onclick="actualizarAutorizaciones()">Actualizar Bases de Datos</button>
+    
+    <div style="margin-top: 70px; text-align: center;">
+        <div class="card text-white bg-primary" style="width: 70%; display:inline-block;">
+            <div class="card-header">Importante</div>
+            <div class="card-body">
+            <h4 class="card-title">Actualizar Bases de Datos</h4>
+            <p class="card-text">Se recomienda realizar esta acción, si se ha reiniciado el servidor, o bien, es primera vez que ingresa a la página.</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    {% include 'js/index.html' %}
 {% endblock %}
