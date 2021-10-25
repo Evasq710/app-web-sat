@@ -1,0 +1,23 @@
+header {
+    text-align: center;
+    margin: 40px 0 40px 0;
+}
+
+.container {
+    text-align: center;
+}
+
+footer {
+    color: white;
+    line-height: 10px;
+    text-align: center;
+    padding-top: 20px;
+    padding-bottom: 5px;
+    font-size: 15px;
+    font-family: 'Lato', sans-serif;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background: rgba(4, 67, 119, 0.5);
+    /* background-image: url("../images/footer.png"); */
+}
