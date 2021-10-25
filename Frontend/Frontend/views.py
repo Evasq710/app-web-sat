@@ -7,7 +7,8 @@ from django.shortcuts import render
 def home(request):
     return render(request, "index.html")
 
-
+def load_file(request):
+    return render(request, "cargarArchivo.html")
 
 
 

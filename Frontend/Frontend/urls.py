@@ -20,6 +20,7 @@ from Frontend.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('home/', home),
+    path('load_file/', load_file),
 
     path('saludo/',saludo),
     path('edad/<int:edad>/<int:agno>/', calcularEdad)
