@@ -4,6 +4,12 @@ from django.http import HttpResponse
 # (3) :
 from django.shortcuts import render
 
+def home(request):
+    return render(request, "index.html")
+
+
+
+
 
 
 # Funcion vista
@@ -23,6 +29,9 @@ def saludo(request):
     # # Renderizando la plantilla, mandándole el contexto
     # doc_renderizado = temp.render(ctxt)
 
+    # return HttpResponse(doc_renderizado)
+
+
     # (2) === CARGANDO LA PLANTILLA CON UN LOADER, HABIENDO ESPECIFICADO LA RUTA DE LAS PLANTILLAS EN settings.py  ===
     # temp = loader.get_template('ejemplo.html')
     # doc_renderizado = temp.render({
@@ -31,7 +40,8 @@ def saludo(request):
 
     # return HttpResponse(doc_renderizado)
 
-    # (3) === CARGANDO LA PLANTILLA UN RENDER DE SHORTCUTS, HABIENDO ESPECIFICADO LA RUTA DE LAS PLANTILLAS EN settings.py  ===
+
+    # (3) === CARGANDO LA PLANTILLA CON RENDER DE SHORTCUTS, HABIENDO ESPECIFICADO LA RUTA DE LAS PLANTILLAS EN settings.py  ===
     # El contexto puede ir vacío
     return render(request, 'ejemplo.html', {'nombre': nombre, 'apellido': apellido, 'temas': temas})
 

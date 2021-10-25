@@ -1,0 +1,47 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'styles/bootstrap.min.css' %}" type="text/css" />
+    <title>Autorizacions DTE</title>
+</head>
+<body>
+    <header>
+        <img src="{% static 'images/sat.png' %}" width="220" height="60"/>
+        <h1>Autorizaciones DTE</h1>
+    </header>
+    <div class="container_btn">
+        <button>Cargar Archivo</button>
+        <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="peticiones" data-bs-toggle="dropdown" aria-expanded="false">Peticiones</button>
+            <ul class="dropdown-menu" aria-labelledby="peticiones">
+              <li><a class="dropdown-item" href="#">Consultar Datos</a></li>
+              <li><a class="dropdown-item" href="#">Resumen de IVA por fecha y NIT</a></li>
+              <li><a class="dropdown-item" href="#">Resumen por rango de fechas</a></li>
+              <li><a class="dropdown-item" href="#">Gráfica</a></li>
+              <li><a class="dropdown-item" href="#">Reporte en PDF</a></li>
+            </ul>
+        </div>
+        <button>Ayuda</button>
+    </div>
+    <div class="container">
+        {% block content %}
+
+        {% endblock %}
+    </div>
+    <footer>
+        <p>Elías Abraham Vasquez Soto - 201900131</p>
+        <p>Proyecto 3 - Laboratorio Introducción a la Programación y Computación E</p>
+        <img src="{% static 'images/logo_usac.png' %}" width="220" height="60"/>
+    </footer>
+</body>
+</html>

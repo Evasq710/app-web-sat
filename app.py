@@ -273,10 +273,8 @@ def correlativos():
     # Guardando las nuevas fechas, solo de las facturas aprobadas
     fechas_nuevas = []
     for solicitud in solicitudes_DTE:
-        print(solicitud.fecha)
         if fechas_nuevas.count(solicitud.fecha) == 0:
             fechas_nuevas.append(solicitud.fecha)
-    print(f"Fechas distintas: {len(fechas_nuevas)}")
     # Guardando fechas de las que ya se cuenta registro
     fechas_antiguas = []
     for autorizacion in autorizaciones_global:
@@ -293,9 +291,11 @@ def correlativos():
                     nuevas_aprobaciones = []
                     list_index = []
                     index = 0
+                    agregadas = 0
                     for solicitud in solicitudes_DTE:
                         if solicitud.fecha == fecha:
                             correlativo += 1
+                            agregadas += 1
                             solicitud.crear_num_autorizacion(correlativo)
                             nuevas_aprobaciones.append(Aprobacion(
                                 solicitud.referencia, solicitud.nit_emisor, solicitud.num_autorizacion, solicitud.nit_receptor, solicitud.valor, solicitud.iva, solicitud.total
@@ -306,6 +306,7 @@ def correlativos():
                     for i in list_index:
                         del solicitudes_DTE[i]
                     actualizar_aprobaciones(fecha, nuevas_aprobaciones)
+                    print(f"Coinciden con {fecha} {agregadas} solicitudes")
                     break
         else: # La fecha no está registrada previamente
             print(fecha, "no se encuentra registrada")
@@ -323,13 +324,10 @@ def correlativos():
                         solicitud.referencia, solicitud.nit_emisor, solicitud.num_autorizacion, solicitud.nit_receptor, solicitud.valor, solicitud.iva, solicitud.total
                     ))
                     list_index.append(index)
-                    print(f"{solicitud.fecha} coincide. Index {index}")
                 else:
-                    print(f"{solicitud.fecha} NO coincide. Index {index}")
                     index += 1
             for i in list_index:
                 del solicitudes_DTE[i]
-            print(f"Iteraciones {iteraciones}")
             print(f"Coinciden con {fecha} {correlativo} solicitudes")
             crear_autorizacion(fecha, nuevas_aprobaciones)
 
@@ -352,7 +350,6 @@ def actualizar_aprobaciones(fecha, nuevas_aprobaciones):
                             "total_DB": aprobacion.total_DB
                         })
                     break
-    print(f"Se encontraron {len(nuevas_aprobaciones)} correctas con fecha {fecha}")
 
 def crear_autorizacion(fecha, nuevas_aprobaciones):
     global solicitudes_rechazadas
@@ -417,7 +414,6 @@ def crear_autorizacion(fecha, nuevas_aprobaciones):
             "iva_DB": aprobacion.iva_DB,
             "total_DB": aprobacion.total_DB
         })
-    print(f"Se encontraron {len(nuevas_aprobaciones)} correctas con fecha {fecha}")
     data_JSON['autorizaciones'].append({"fecha": fecha, "aprobaciones": aprobaciones})
 
 def actualizar_errores():
