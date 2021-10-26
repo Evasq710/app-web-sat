@@ -1,11 +1,13 @@
 <script>
+
+    var textArea = document.getElementById('solicitudes')
+
     function stringXML(){
         try{
             let archivo = document.getElementById('solicitudes_xml').files[0]
             if (archivo['type'] == "text/xml"){
                 const reader = new FileReader()
                 reader.addEventListener('load', (event) => {
-                    var textArea = document.getElementById('solicitudes')
                     textArea.innerHTML = event.target.result
                     alert("El archivo XML se ha cargado correctamente.")
                 })
@@ -19,7 +21,43 @@
         }
     }
 
-    function cargaSolicitudesXML(){
-        
+    function procesarSolicitudesXML(){
+        try {
+            let str_solicitudes = textArea.value
+            if (str_solicitudes != "") {
+                fetch("http://localhost:4000/carga_solicitudes", {
+                    method: 'POST',
+                    body: str_solicitudes,
+                    headers: {
+                    'Content-Type': 'text/plain',
+                    'Access-Control-Allow-Origin': '*',}})
+                .then(res => res.json())
+                .catch(err => {
+                    console.error('Error:', err)
+                    alert("Error interno, ver Consola")
+                })
+                .then(response =>{
+                    console.log(response);
+                    if (response.exito) {
+                        let solis_recibidas = document.getElementById('solis_recibidas')
+                        let fac_correctas = document.getElementById('fac_correctas')
+                        let fac_incorrectas = document.getElementById('fac_incorrectas')
+
+                        solis_recibidas.innerHTML = response.solicitudes_recibidas
+                        fac_correctas.innerHTML = response.facturas_correctas
+                        fac_incorrectas.innerHTML = response.facturas_malas
+
+                        $('#popUpDTE').modal('show');
+                    } else {
+                        alert("Se han encontrado etiquetas XML inválidas. El XML debe tener estructura correcta para que pueda ser procesado!")
+                    }
+                })
+            } else {
+                alert("No se detectaron solicitudes por procesar.")
+            }
+        } catch(error){
+            console.log(error)
+
+        }
     }
 </script>

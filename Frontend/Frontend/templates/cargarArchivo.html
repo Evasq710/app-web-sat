@@ -1,6 +1,28 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    <div class="modal fade" id="popUpDTE">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Resumen Solicitudes DTE procesadas</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Solicitudes recibidas: <span id="solis_recibidas"></span></p>
+            <p>Facturas correctas: <span id="fac_correctas"></span></p>
+            <p>Facturas incorrectas: <span id="fac_incorrectas"></span></p>
+        </div>
+        <div class="modal-footer">
+            <p>Ver Resumen de Autorizaciones para un mejor detalle de todas las autorizaciones en sistema.</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <h1>Cargar Archivo</h1>
     <form>
         <fieldset>
@@ -12,13 +34,13 @@
           <button type="button" class="btn btn-primary" onclick="stringXML()">Cargar solicitudes</button>
           
           <div class="form-group">
-            <label for="exampleTextarea" class="form-label mt-4">Solicitudes cargadas en formato XML</label>
+            <label for="solicitudes" class="form-label mt-4">Solicitudes cargadas en formato XML</label>
             <textarea class="form-control" id="solicitudes" rows="20"></textarea>
           </div>
-          <button type="button" class="btn btn-primary" onclick="cargaSolicitudesXML()">Procesar solicitudes</button>
+          <button type="button" class="btn btn-primary" onclick="procesarSolicitudesXML()">Procesar solicitudes</button>
 
           <div class="form-group">
-            <label for="exampleTextarea" class="form-label mt-4">Resumen de Autorizaciones</label>
+            <label for="autorizaciones" class="form-label mt-4">Resumen de Autorizaciones</label>
             <textarea class="form-control" id="autorizaciones" rows="20" disabled></textarea>
           </div>
           <button type="button" class="btn btn-danger">Reset Autorizaciones</button>
