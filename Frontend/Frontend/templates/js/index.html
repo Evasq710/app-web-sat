@@ -12,7 +12,11 @@
         })
         .then(response =>{
             console.log(response);
-            alert("Se ha actualizado la base de datos correctamente. Autorizaciones actuales: " + response['autorizaciones'])
+            let aut = document.getElementById('aut')
+
+            aut.innerHTML = response.autorizaciones
+
+            $('#popUpBDD').modal('show');
         })
     }
 </script>

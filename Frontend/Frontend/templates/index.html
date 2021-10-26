@@ -1,6 +1,26 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+    <div class="modal fade" id="popUpBDD">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Actualización de Base de Datos exitosa</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true"></span>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>Autorizaciones cargadas: <span id="aut"></span></p>
+        </div>
+        <div class="modal-footer">
+            <p>Ver Resumen de Autorizaciones en "Cargar Archivo" para un mejor detalle.</p>
+        </div>
+        </div>
+    </div>
+    </div>
+
     <h1>Bienvenido</h1>
     <button type="button" class="btn btn-primary" style="margin-top: 40px;" onclick="actualizarAutorizaciones()">Actualizar Bases de Datos</button>
     
