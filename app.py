@@ -16,6 +16,7 @@ solicitudes_rechazadas = []
 def actualizar_aprobaciones():
     global autorizaciones_global
     global data_JSON
+    autorizaciones_global = []
     with open('aprobaciones.json') as apr_JSON:
         data_JSON = json.load(apr_JSON)
     tree_xml_autorizaciones = ET.parse('autorizaciones.xml')
@@ -70,9 +71,14 @@ def carga_archivo():
     global solicitudes_DTE
     global solicitudes_rechazadas
     solicitudes_DTE = []
+    
     entry = request.data.decode('utf-8')
     entrada = entry.replace('\n', '').replace('\r', '').replace('\t', '').upper()
-    root_solicitudes = ET.fromstring(entrada)
+    try:
+        root_solicitudes = ET.fromstring(entrada)
+    except Exception as e:
+        print(e)
+        return jsonify({'exito': False})
     contador = 0
     for solicitud in root_solicitudes.findall("DTE"):
         try:
@@ -203,7 +209,7 @@ def carga_archivo():
     crear_xml_salida()
     crear_dataJSON()
 
-    return jsonify({'solicitudes_recibidas': contador, 'facturas_correctas': correctas, 'facturas_malas': incorrectas,
+    return jsonify({'exito': True, 'solicitudes_recibidas': contador, 'facturas_correctas': correctas, 'facturas_malas': incorrectas,
     'solicitudes_sin_analizar': len(solicitudes_DTE), 'rechazadas_sin_analizar': len(solicitudes_rechazadas), 'aut_total': len(autorizaciones_global)})
 
 def validacion_ref_dobles():
@@ -577,6 +583,40 @@ def crear_dataJSON():
     except Exception as e:
         print(e)
         print("> No pudo crearse el archivo JSON.")
+
+@app.route('/autorizaciones')
+def get_autorizaciones():
+    global autorizaciones_global
+    autorizaciones = []
+    id_aut = 0
+    for autorizacion in autorizaciones_global:
+        aprobaciones = []
+        for aprobacion in autorizacion.lista_facturas_aprobadas:
+            apr = {
+                'referencia': aprobacion.referencia,
+                'nit_emisor': aprobacion.nit_emisor,
+                'codigo_aprobacion': aprobacion.codigo_aprobacion
+            }
+            aprobaciones.append(apr)
+
+        id_aut += 1
+        aut = {
+            'id_aut': f"fecha{id_aut}",
+            'fecha': autorizacion.fecha,
+            'total_facturas': autorizacion.total_facturas,
+            'errores_nit_emisor': autorizacion.errores_nit_emisor,
+            'errores_nit_receptor': autorizacion.errores_nit_receptor,
+            'errores_iva': autorizacion.errores_iva,
+            'errores_total': autorizacion.errores_total,
+            'errores_referencia': autorizacion.errores_referencia,
+            'facturas_sin_error': autorizacion.facturas_sin_error,
+            'total_emisores': autorizacion.total_emisores,
+            'total_receptores': autorizacion.total_receptores,
+            'lista_aprobaciones': aprobaciones,
+            'total_aprobaciones': autorizacion.total_aprobaciones
+        }
+        autorizaciones.append(aut)
+    return jsonify(autorizaciones)
 
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
