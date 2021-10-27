@@ -139,4 +139,32 @@
         }
     }
 
+    function resetAutorizaciones(){
+        try {
+            let cadenaHTML = ""
+            fetch("http://localhost:4000/autorizaciones/reset", {
+                method: 'DELETE',
+                headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Error interno, ver Consola")
+            })
+            .then(response =>{
+                console.log(response);
+                if (response.exito) {
+                    alert("Se han reseteado las autorizaciones correctamente")
+                    location.reload()
+                } else {
+                    alert("No ha sido posible resetear las autorizaciones. Ver consola.")
+                }
+            })
+        } catch(error){
+            console.log(error)
+            alert("No ha sido posible resetear las autorizaciones. Ver consola.")
+        }
+    }
+
 </script>

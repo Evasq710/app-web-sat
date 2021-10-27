@@ -6,11 +6,21 @@
 
 {% block content %}
     <h1>Consulta de Datos - Autorizaciones</h1>
-    
-    
 
     <div class="accordion" id="Fechas">
       </div>
+    
+      
+    <button type="button" class="btn btn-danger" style="margin-top: 40px;" onclick="resetAutorizaciones()">Reset Autorizaciones</button>
+    <div style="margin-top: 30px; text-align: center;">
+        <div class="card text-white bg-danger" style="width: 70%; display:inline-block;">
+            <div class="card-header">Importante</div>
+            <div class="card-body">
+            <h4 class="card-title">Reset Autorizaciones</h4>
+            <p class="card-text">Esta opción, elimina todas las autorizaciones que hayan sido realizadas. Esta acción es permanente.</p>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
 
