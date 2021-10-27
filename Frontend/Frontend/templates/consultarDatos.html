@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block body_onload %}
+<body class="d-flex flex-column h-100" onload="getAutorizaciones()">
+{% endblock %}
+
+{% block content %}
+    <h1>Consulta de Datos - Autorizaciones</h1>
+    
+    
+
+    <div class="accordion" id="Fechas">
+      </div>
+
+{% endblock %}
+
+{% block js %}
+    {% include 'js/consultarDatos.html' %}
+{% endblock %}

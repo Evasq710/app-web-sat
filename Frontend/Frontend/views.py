@@ -10,7 +10,8 @@ def home(request):
 def load_file(request):
     return render(request, "cargarArchivo.html")
 
-
+def peticion_datos(request):
+    return render(request, "consultarDatos.html")
 
 
 # Funcion vista

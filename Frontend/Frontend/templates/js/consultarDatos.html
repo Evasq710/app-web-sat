@@ -1,0 +1,142 @@
+<script>
+
+    var acordeonFechas = document.getElementById('Fechas')
+
+    function getAutorizaciones(){
+        try {
+            let cadenaHTML = ""
+            fetch("http://localhost:4000/autorizaciones", {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Error interno, ver Consola")
+            })
+            .then(response =>{
+                console.log(response);
+                response.forEach(autorizacion => {
+                    cadenaHTML += `
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="${autorizacion.id_aut}">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#datos${autorizacion.id_aut}" aria-expanded="false" aria-controls="datos${autorizacion.id_aut}">
+                ${autorizacion.fecha}
+              </button>
+            </h2>
+            <div id="datos${autorizacion.id_aut}" class="accordion-collapse collapse" aria-labelledby="${autorizacion.id_aut}" data-bs-parent="#Fechas"">
+              <div class="accordion-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                          <th scope="col" style="width: 50%;"></th>
+                          <th scope="col" style="width: 50%;"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr class="table-secondary">
+                          <th scope="row">Facturas recibidas</th>
+                          <td>${autorizacion.total_facturas}</td>
+                        </tr>
+                        <tr class="table-default"><td></td><td></td></tr>
+                        <tr class="table-primary">
+                          <th scope="row" colspan="2">Errores</th>
+                        </tr>
+                        <tr class="table-active">
+                          <th scope="row">Nit emisor</th>
+                          <td>${autorizacion.errores_nit_emisor}</td>
+                        </tr>
+                        <tr class="table-active">
+                          <th scope="row">Nit receptor</th>
+                          <td>${autorizacion.errores_nit_receptor}</td>
+                        </tr>
+                        <tr class="table-active">
+                          <th scope="row">IVA</th>
+                          <td>${autorizacion.errores_iva}</td>
+                        </tr>
+                        <tr class="table-active">
+                          <th scope="row">Total</th>
+                          <td>${autorizacion.errores_total}</td>
+                        </tr>
+                        <tr class="table-active">
+                          <th scope="row">Referencia Duplicada</th>
+                          <td>${autorizacion.errores_referencia}</td>
+                        </tr>
+                        <tr class="table-default"><td></td><td></td></tr>
+                        <tr class="table-secondary">
+                          <th scope="row">Facturas correctas</th>
+                          <td>${autorizacion.facturas_sin_error}</td>
+                        </tr>
+                        <tr class="table-secondary">
+                          <th scope="row">Cantidad emisores</th>
+                          <td>${autorizacion.total_emisores}</td>
+                        </tr>
+                        <tr class="table-secondary">
+                          <th scope="row">Cantidad receptores</th>
+                          <td>${autorizacion.total_receptores}</td>
+                        </tr>
+                        <tr class="table-secondary">
+                          <th scope="row">Total de Aprobaciones</th>
+                          <td>${autorizacion.total_aprobaciones}</td>
+                        </tr>
+                        <tr class="table-default"><td></td><td></td></tr>
+                        <tr class="table-primary">
+                          <td colspan="2">
+                            <div class="accordion" id="Aprobaciones">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="listado">
+                                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#datosAprobaciones" aria-expanded="false" aria-controls="datosAprobaciones">
+                                        Listado de Aprobaciones
+                                      </button>
+                                    </h2>
+                                    <div id="datosAprobaciones" class="accordion-collapse collapse" aria-labelledby="listado" data-bs-parent="#Aprobaciones"">
+                                      <div class="accordion-body">
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                  <th scope="col" style="width: 50%;"></th>
+                                                  <th scope="col" style="width: 50%;"></th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>\n`
+                        autorizacion.lista_aprobaciones.forEach(aprobacion => {
+                            cadenaHTML += `        <tr class="table-default">
+                                                  <th scope="row">Referencia</th>
+                                                  <td>${aprobacion.referencia}</td>
+                                                </tr>
+                                                <tr class="table-default">
+                                                  <th scope="row">Nit Emisor</th>
+                                                  <td>${aprobacion.nit_emisor}</td>
+                                                </tr>
+                                                <tr class="table-default">
+                                                  <th scope="row">Código de Aprobación</th>
+                                                  <td>${aprobacion.codigo_aprobacion}</td>
+                                                </tr>
+                                                <tr class="table-default"><td></td><td></td></tr>\n`
+                        })
+                         cadenaHTML += `</tbody>
+                                          </table>
+                                      </div>
+                                    </div>
+                                  </div>
+                              </div>
+                          </td>
+                        </tr>
+                    </tbody>
+                  </table>
+              </div>
+            </div>
+          </div>`
+                });
+
+                acordeonFechas.innerHTML = cadenaHTML
+
+            })
+        } catch(error){
+            console.log(error)
+            alert("No ha sido posible actualizar las autorizaciones. Ver consola.")
+        }
+    }
+
+</script>
