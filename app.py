@@ -618,6 +618,31 @@ def get_autorizaciones():
         autorizaciones.append(aut)
     return jsonify(autorizaciones)
 
+@app.route('/autorizaciones/reset', methods=['DELETE'])
+def reset_autorizaciones():
+    global autorizaciones_global
+    global data_JSON
+
+    autorizaciones_global = []
+    crear_xml_salida()
+
+    aprobaciones = '''{
+        "autorizaciones": [
+        ]
+    }'''
+    try:
+        file_json = open('aprobaciones.json', 'w')
+        file_json.write(aprobaciones)
+        file_json.close()
+        print("> El archivo JSON se creo exitosamente.")
+        with open('aprobaciones.json') as apr_JSON:
+            data_JSON = json.load(apr_JSON)
+        return jsonify({'exito': True})
+    except Exception as e:
+        print(e)
+        print("> No pudo crearse el archivo JSON.")
+        return jsonify({'exito': False})
+
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
 def ping():
