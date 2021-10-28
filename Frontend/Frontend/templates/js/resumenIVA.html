@@ -1,7 +1,8 @@
 <script type="text/javascript">
 
     var inputFecha = document.getElementById('input-date')
-    var canvas = document.getElementById('grafica').getContext('2d');
+    var canvas = document.getElementById('grafica')
+    var context = canvas.getContext('2d');
     var datos = {
         // Nits
         labels: [],
@@ -17,9 +18,10 @@
             data: []
         }]
     };
+    var graficaGenerada = false
 
     $(document).ready(function(){
-        window.bar = new Chart(canvas, {
+        window.bar = new Chart(context, {
             type: "bar",
             data: datos,
             options: {
@@ -74,6 +76,7 @@
                     datos.datasets[0].data = montos_emitidos
                     datos.datasets[1].data = montos_recibidos
                     window.bar.update();
+                    graficaGenerada = true
 
                 } else {
                     alert(`No existen autorizaciones realizadas en la fecha ${fecha}`)
@@ -86,7 +89,25 @@
     }
 
     function generarPDF(){
+        if (graficaGenerada) {
+            var imgGrafica = canvas.toDataURL("image/jpeg", 1.0);
+            var pdf = new jsPDF("p", "mm", "letter");
+            let width = pdf.internal.pageSize.getWidth();
+            let height = pdf.internal.pageSize.getHeight();
 
+            pdf.setFontSize(22);
+            pdf.setFont("helvetica");
+            pdf.setFontType("bold");
+            pdf.text(20, 20, 'Autorizaciones DTE - SAT');
+            pdf.text(20, 35, `Resumen de IVA emitido y recibido el ${inputFecha.value}`);
+            pdf.addImage(imgGrafica, 'JPEG', 10, 50, width - 20, height - 500);
+            pdf.text(20, 260, 'Proyecto 3 - IPC 2');
+            pdf.text(20, 270, 'Elías Abraham Vasquez Soto - 201900131');
+            pdf.save("resumenIVA.pdf");
+            alert("PDF generado exitosamente.")
+        } else {
+            alert("Debe generarse una gráfica, para poder generar el reporte en PDF.")
+        }
     }
 
 </script>

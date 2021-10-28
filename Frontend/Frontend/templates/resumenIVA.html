@@ -2,6 +2,7 @@
 
 {% block scripts %}
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -18,7 +19,7 @@
     <button type="button" class="btn btn-success" onclick="generarPDF()" style="margin: 10px;">Generar gráfica en PDF</button>
 
     <div style="display: inline;">
-        <canvas id="grafica"></canvas>
+        <canvas id="grafica" width="500" height="200"></canvas>
     </div>      
 
 {% endblock %}
