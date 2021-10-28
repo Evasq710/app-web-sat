@@ -643,6 +643,42 @@ def reset_autorizaciones():
         print("> No pudo crearse el archivo JSON.")
         return jsonify({'exito': False})
 
+@app.route('/movimientos_nit/<string:fecha>')
+def get_movimientos_fecha(fecha):
+    global autorizaciones_global
+    
+    arr_fecha = fecha.split('-')
+    fecha = arr_fecha[0] + "/" + arr_fecha[1] + "/" + arr_fecha[2]
+
+    for autorizacion in autorizaciones_global:
+        if fecha == autorizacion.fecha:
+            nits = []
+            for aprobacion in autorizacion.lista_facturas_aprobadas:
+                if nits.count(aprobacion.nit_emisor) == 0:
+                    nits.append(aprobacion.nit_emisor)
+                if nits.count(aprobacion.nit_receptor_DB) == 0:
+                    nits.append(aprobacion.nit_receptor_DB)
+
+            movimientos = []
+            for nit in nits:
+                iva_emitido = 0
+                iva_recibido = 0
+                for aprobacion in autorizacion.lista_facturas_aprobadas:
+                    if aprobacion.nit_emisor == nit:
+                        iva_emitido += aprobacion.iva_DB
+                    if aprobacion.nit_receptor_DB == nit:
+                        iva_recibido += aprobacion.iva_DB
+                movimiento = {
+                    'nit': nit,
+                    'iva_emitido': iva_emitido,
+                    'iva_recibido': iva_recibido
+                }
+                movimientos.append(movimiento)
+
+            return jsonify({'exito': True, 'movimientos': movimientos})
+
+    return jsonify({'exito': False})
+
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
 def ping():
