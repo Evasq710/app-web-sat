@@ -13,6 +13,8 @@ def load_file(request):
 def peticion_datos(request):
     return render(request, "consultarDatos.html")
 
+def peticion_resumen_iva(request):
+    return render(request, "resumenIVA.html")
 
 # Funcion vista
 def saludo(request):

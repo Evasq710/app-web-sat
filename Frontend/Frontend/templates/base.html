@@ -18,6 +18,10 @@
 
     <link rel="stylesheet" href="{% static 'styles/base.css' %}" type="text/css" />
     
+    {% block scripts %}
+
+    {% endblock %}
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -47,10 +51,8 @@
                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Peticiones</a>
                 <div class="dropdown-menu" data-bs-popper="none">
                   <a class="dropdown-item" href="/../peticion/consultar_datos/">Consultar Datos</a>
-                  <a class="dropdown-item" href="#">Resumen de IVA por fecha y NIT</a>
+                  <a class="dropdown-item" href="/../peticion/resumen_iva/">Resumen de IVA por fecha y NIT</a>
                   <a class="dropdown-item" href="#">Resumen por rango de fechas</a>
-                  <a class="dropdown-item" href="#">Gráfica</a>
-                  <a class="dropdown-item" href="#">Reporte en PDF</a>
                 </div>
               </li>
               <li class="nav-item">

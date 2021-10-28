@@ -1,0 +1,92 @@
+<script type="text/javascript">
+
+    var inputFecha = document.getElementById('input-date')
+    var canvas = document.getElementById('grafica').getContext('2d');
+    var datos = {
+        // Nits
+        labels: [],
+        datasets: [{
+            label: "IVA emitido",
+            backgroundColor: "rgba(15, 151, 35, 0.6)",
+            // Montos IVA emitido por Nit
+            data: []
+        },{
+            label: "IVA recibido",
+            backgroundColor: "rgba(15, 127, 151, 0.6)",
+            // Montos IVA recibido por Nit
+            data: []
+        }]
+    };
+
+    $(document).ready(function(){
+        window.bar = new Chart(canvas, {
+            type: "bar",
+            data: datos,
+            options: {
+                elements: {
+                    rectangle: {
+                        borderWidth: 1,
+                        borderColor: "rgb(151, 15, 25)",
+                        borderSkipped: "bottom"
+                    }
+                },
+                responsive: true,
+                title: {
+                    display: true,
+                    text: "Resumen de movimientos de IVA"
+                }
+            }
+        });
+    })
+
+    function graficarIVA(){
+        
+        let arrayFecha = inputFecha.value.split("-")
+        let fecha = arrayFecha[2]+"-"+arrayFecha[1]+"-"+arrayFecha[0]
+
+        try {
+            fetch(`http://localhost:4000/movimientos_nit/${fecha}`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Error interno, ver Consola")
+            })
+            .then(response =>{
+                console.log(response);
+                if (response.exito) {
+                    // labels
+                    let nits = []
+                    // dataset.data
+                    let montos_emitidos = []
+                    let montos_recibidos = []
+
+                    response.movimientos.forEach(movimiento => {
+                        nits.push(movimiento.nit);
+                        montos_emitidos.push(movimiento.iva_emitido);
+                        montos_recibidos.push(movimiento.iva_recibido);
+                    })
+
+                    datos.labels = nits
+                    datos.datasets[0].data = montos_emitidos
+                    datos.datasets[1].data = montos_recibidos
+                    window.bar.update();
+
+                } else {
+                    alert(`No existen autorizaciones realizadas en la fecha ${fecha}`)
+                }
+            })
+        } catch(error){
+            console.log(error)
+            alert("No ha sido posible realizar la gráfica de movimientos por Nit. Ver consola.")
+        }
+    }
+
+    function generarPDF(){
+
+    }
+
+</script>

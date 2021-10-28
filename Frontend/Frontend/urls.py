@@ -22,6 +22,7 @@ urlpatterns = [
     path('home/', home),
     path('load_file/', load_file),
     path('peticion/consultar_datos/', peticion_datos),
+    path('peticion/resumen_iva/', peticion_resumen_iva),
 
     path('saludo/',saludo),
     path('edad/<int:edad>/<int:agno>/', calcularEdad)

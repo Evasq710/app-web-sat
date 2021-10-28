@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+    <h1>Resumen de IVA por fecha y NIT</h1>
+
+    <p class="lead">Seleccione la fecha en la que desee mostrar gráficamente los movimientos por NIT, apreciando el IVA emitido y el IVA recibido por cada uno de ellos.</p>
+
+    <div class="form-date" style="margin: 40px 0 20px;">
+        <h3 class="form-date_label" for="input-date">Fecha por graficar</h3>
+        <input class="form-date_input" type="date" id="input-date" value="2021-11-01" />
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="graficarIVA()" style="margin: 10px;">Graficar</button>
+    <button type="button" class="btn btn-success" onclick="generarPDF()" style="margin: 10px;">Generar gráfica en PDF</button>
+
+    <div style="display: inline;">
+        <canvas id="grafica"></canvas>
+    </div>      
+
+{% endblock %}
+
+{% block js %}
+    {% include 'js/resumenIVA.html' %}
+{% endblock %}
