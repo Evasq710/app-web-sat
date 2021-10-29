@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block scripts %}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <style>
+        .daterangepicker {
+            color: black;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <h1>Resumen por rango de fechas</h1>
+
+    <p class="lead">Seleccione un rango de fechas por la cual se deseen filtrar los resultados.</p>
+
+    <div class="form-date" style="margin: 40px 0 20px;">
+        <h3 class="form-date_label" for="daterange">Fecha mínima - Fecha máxima</h3>
+        <input type="text" name="daterange" id="daterange" size="23"/>
+    </div>
+
+    <form>
+        <fieldset class="form-group" style="margin-bottom: 40px;">
+            <h3 class="mt-4"">Monto a graficar</h3>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="conIVA" value="yes-iva" checked="" />
+                    Valores totales (IVA incluido)
+                </label>
+            </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="optionsRadios" id="sinIVA" value="no-iva" />
+                    Valores sin IVA
+                </label>
+            </div>
+        </fieldset>
+    </form>
+
+    <button type="button" class="btn btn-primary" onclick="graficarFechas()" style="margin: 10px;">Graficar montos</button>
+    <button type="button" class="btn btn-success" onclick="generarPdf()" style="margin: 10px;">Generar gráfica en PDF</button>
+
+    <div style="display: inline;">
+        <canvas id="grafica" width="500" height="200"></canvas>
+    </div>      
+
+{% endblock %}
+
+{% block js %}
+    {% include 'js/resumenFechas.html' %}
+{% endblock %}

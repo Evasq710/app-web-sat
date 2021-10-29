@@ -1,0 +1,131 @@
+<script type="text/javascript">
+
+    $('input[name="daterange"]').daterangepicker({
+        "startDate": "01/01/2021",
+        "endDate": "01/11/2021",
+        "showDropdowns": true,
+        "locale": {
+            format: 'DD/MM/YYYY',
+            "daysOfWeek": ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sá"],
+            "monthNames": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio",
+                        "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+        }
+    });
+
+
+    var rangoFechas = document.getElementById('daterange')
+    var rdbtnConIVA = document.getElementById('conIVA')
+    var canvas = document.getElementById('grafica')
+    var context = canvas.getContext('2d');
+    var datos = {
+        // Fechas
+        labels: [],
+        datasets: [{
+            label: "Monto",
+            backgroundColor: "rgba(15, 151, 35, 0.6)",
+            // Montos, con o sin IVA
+            data: []
+        }]
+    };
+    var graficaGenerada = false
+    var conSinIVA = ""
+
+    $(document).ready(function(){
+        window.bar = new Chart(context, {
+            type: "bar",
+            data: datos,
+            options: {
+                elements: {
+                    rectangle: {
+                        borderWidth: 1,
+                        borderColor: "rgb(151, 15, 25)",
+                        borderSkipped: "bottom"
+                    }
+                },
+                responsive: true,
+                title: {
+                    display: true,
+                    text: "Resumen por rango de fechas"
+                }
+            }
+        });
+    })
+
+    function graficarFechas(){
+        let arrayFechas = rangoFechas.value.replace(/ /g, "").split("-")
+        let arrayFechaMin = arrayFechas[0].split("/")
+        let arrayFechaMax = arrayFechas[1].split("/")
+        let fechaConcMin = arrayFechaMin[2] + arrayFechaMin[1] + arrayFechaMin[0]
+        let fechaConcMax = arrayFechaMax[2] + arrayFechaMax[1] + arrayFechaMax[0]
+        let iva = ""
+        if (rdbtnConIVA.checked) {
+            iva = "si"
+            conSinIVA = "con IVA incluido"
+        } else {
+            iva = "no"
+            conSinIVA = "sin IVA incluido"
+        }
+
+        try {
+            fetch(`http://localhost:4000/totales_fechas/${fechaConcMin}/${fechaConcMax}/${iva}`, {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',}})
+            .then(res => res.json())
+            .catch(err => {
+                console.error('Error:', err)
+                alert("Error interno, ver Consola")
+            })
+            .then(response =>{
+                console.log(response);
+                if (response.exito) {
+                    // labels
+                    let fechas = []
+                    // dataset.data, Montos, con o sin IVA
+                    let montos_totales = []
+
+                    response.totales_por_fecha.forEach(total => {
+                        fechas.push(total.fecha);
+                        montos_totales.push(total.monto);
+                    })
+
+                    datos.labels = fechas
+                    datos.datasets[0].data = montos_totales
+                    window.bar.update();
+                    graficaGenerada = true
+
+                } else {
+                    alert(response.mensaje)
+                }
+            })
+        } catch(error){
+            console.log(error)
+            alert("No ha sido posible realizar la gráfica de movimientos por fechas. Ver consola.")
+        }
+    }
+
+    function generarPdf(){
+        if (graficaGenerada) {
+            var imgGrafica = canvas.toDataURL("image/jpeg", 1.0);
+            var pdf = new jsPDF("p", "mm", "letter");
+            let width = pdf.internal.pageSize.getWidth();
+            let height = pdf.internal.pageSize.getHeight();
+
+            pdf.setFontSize(22);
+            pdf.setFont("helvetica");
+            pdf.setFontType("bold");
+            pdf.text(20, 20, 'Autorizaciones DTE - SAT');
+            pdf.text(20, 35, 'Resumen de montos totales por rango de fechas');
+            pdf.text(20, 50, conSinIVA);
+            pdf.addImage(imgGrafica, 'JPEG', 10, 65, width - 20, height - 500);
+            pdf.text(20, 260, 'Proyecto 3 - IPC 2');
+            pdf.text(20, 270, 'Elías Abraham Vasquez Soto - 201900131');
+            pdf.save("resumenFechas.pdf");
+            alert("PDF generado exitosamente.")
+        } else {
+            alert("Debe generarse una gráfica, para poder generar el reporte en PDF.")
+        }
+    }
+
+</script>
