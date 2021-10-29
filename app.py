@@ -679,6 +679,37 @@ def get_movimientos_fecha(fecha):
 
     return jsonify({'exito': False})
 
+@app.route('/totales_fechas/<string:fecha_conc_min>/<string:fecha_conc_max>/<string:iva>')
+def get_totales_fechas(fecha_conc_min, fecha_conc_max, iva):
+    global autorizaciones_global
+    
+    try:
+        fecha_min = int(fecha_conc_min)
+        fecha_max = int(fecha_conc_max)
+    except Exception as e:
+        print(e)
+        return jsonify({'exito': False, 'mensaje': 'Ocurrió un error al parsear a entero la fecha :('})
+
+    if fecha_min <= fecha_max:
+        totales_por_fecha = []
+        for autorizacion in autorizaciones_global:
+            if autorizacion.fecha_concatenada >= fecha_min and autorizacion.fecha_concatenada <= fecha_max:
+                monto_total = 0
+                for aprobacion in autorizacion.lista_facturas_aprobadas:
+                    if iva == "si":
+                        monto_total += aprobacion.total_DB
+                    elif iva == "no":
+                        monto_total += aprobacion.valor_DB
+                totales_por_fecha.append({"fecha": autorizacion.fecha, "monto": monto_total})
+        
+        if len(totales_por_fecha) > 0:
+            return jsonify({'exito': True, 'totales_por_fecha': totales_por_fecha})
+        
+        return jsonify({'exito': False, 'mensaje': 'No se encontraron autorizaciones realizadas en el rango de fechas dado.'})
+    
+    return jsonify({'exito': False, 'mensaje': 'La primera fecha debe ser menor a la segunda'})
+
+
 #Test de que el server está corriendo (GET por default)
 @app.route('/ping')
 def ping():
