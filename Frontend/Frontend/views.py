@@ -19,6 +19,9 @@ def peticion_resumen_iva(request):
 def peticion_resumen_fechas(request):
     return render(request, "resumenFechas.html")
 
+def ayuda_documentacion(request):
+    return render(request, "ayudaDocumentacion.html")
+
 # Funcion vista
 def saludo(request):
     nombre = "Elias"

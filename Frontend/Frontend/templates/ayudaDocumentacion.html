@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+    <h1>Documentación de la página</h1>
+
+    <p class="lead" style="margin-bottom: 40px;">En este apartado, encontrará una guía para cada una de las acciones que puede realizar en la página <strong>Autorizaciones DTE</strong>.</p>
+
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link active" data-bs-toggle="tab" href="#home">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="tab" href="#cargaArchivo">Cargar Archivo</a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Peticiones</a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" data-bs-toggle="tab" href="#dropdown1">Consultar Datos</a>
+            <a class="dropdown-item" data-bs-toggle="tab" href="#dropdown2">Resumen de IVA por fecha y NIT</a>
+            <a class="dropdown-item" data-bs-toggle="tab" href="#dropdown3">Resumen por rango de fechas</a>
+          </div>
+        </li>
+    </ul>
+
+      <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade active show" id="home">
+          
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-info mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Home</h4>
+                  <p class="card-text">
+                    <hr/>Página de inicio, en donde podrá actualizar la base de datos de autorizaciones realizadas.
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-info mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Funciones</h4>
+                  <p class="card-text"><hr/></p>
+                  <img src="{% static 'images/Ayuda/btnActualizar.png' %}" alt="Boton Actualizar" style="margin: 10px 0 10px;"/>
+                  <p class="card-text">
+                    Está opción está disponible para inicializar el servidor, restaurando todas las autorizaciones que hayan sido guardadas anteriormente
+                    (en caso se haya reiniciado el servidor), o bien, preparando la información necesaria para que puedan procesarse
+                    solicitudes, y generar autorizaciones (en caso sea primera vez que interactúa con la página).
+                  </p>
+                </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="cargaArchivo">
+          
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-success mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Cargar Archivo</h4>
+                  <p class="card-text">
+                    <hr/>En esta pantalla, es posible gestionar la carga de los archivos de entrada con extensión .xml
+                    con una o varias solicitudes de autorización, para poder ser procesadas.
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-success mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Funciones</h4>
+                  <p class="card-text"><hr/></p>
+                  <img src="{% static 'images/Ayuda/subirXML.png' %}" alt="Subir XML" style="margin: 10px 0 10px; width: 100%;"/>
+                  <p class="card-text">
+                    Aquí, se podrán cargar los archivos de entrada en formato XML, con las solicitudes o DTE's que se busquen procesar
+                    y autorizar. Al momento de seleccionar "Cargar solicitudes", si el archivo subido es un XML, el contenido del mismo se
+                    trasladará al área de texto, para que, si lo desea, pueda ser revisado y editado, antes de mandarlo a procesar.
+                  </p>
+                  <img src="{% static 'images/Ayuda/textareaDTE.png' %}" alt="Text Area DTE's" style="margin: 40px 0 10px; width: 100%;"/>
+                  <p class="card-text">
+                    Una vez se decida procesar las solicitudes ingresadas en el área de texto, se mandaran todas ellas al servidor.
+                    Al terminado el proceso, se mostrará en pantalla una ventana emergente, indicando las solicitudes recibidas, así como
+                    las facturas correctas o incorrectas encontradas (las aprobaciones se realizará únicamente a las facturas correctas).
+                  </p>
+                  <img src="{% static 'images/Ayuda/popupDTE.png' %}" alt="PopUp DTE's" style="margin: 40px 0 10px;"/>
+                </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="dropdown1">
+          
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Consultar Datos</h4>
+                  <p class="card-text">
+                    <hr/>Al consultar esta página, se muestra la información almacenada en la base de datos de todas las
+                    autorizaciones realizadas. El contenido de esta vista es el mismo que se puede encontrar en el archivo XML de autorizaciones.
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Funciones</h4>
+                  <p class="card-text"><hr/></p>
+                  <img src="{% static 'images/Ayuda/autorizaciones.png' %}" alt="Autorizaciones" style="margin: 10px 0 10px; width: 100%;"/>
+                  <p class="card-text">
+                    Se muestran todas las autorizaciones seaparadas por fechas, en donde, al seleccionar la fecha de interés, se muestra un
+                    resumen de todas las facturas recibidas, los errores detectados, así como un listado de las aprobaciones realizadas en esa fecha.
+                  </p>
+                  <img src="{% static 'images/Ayuda/btnReset.png' %}" alt="Reset Autorizaciones" style="margin: 40px 0 10px;"/>
+                  <p class="card-text">
+                    Al seleccionar esta opción, automáticamente se restaura el servidor a su estado inicial. Sin datos. Debe tomarse en cuenta
+                    que esta acción no puede deshacerse.
+                  </p>
+                </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="dropdown2">
+          
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Resumen de IVA por fecha y NIT</h4>
+                  <p class="card-text">
+                    <hr/>Al seleccionar esta opción, podrá elegir la fecha por la cual se desea filtrar la gráfica,
+                    mostrando un resumen de movimientos por NIT en la fecha escogida. Por cada NIT que se encuentre registrado
+                    en esa fecha, se podrá apreciar el IVA emitido y el IVA recibido.
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Funciones</h4>
+                  <p class="card-text"><hr/></p>
+                  <img src="{% static 'images/Ayuda/fechaIVA.png' %}" alt="Fecha de IVA" style="margin: 10px 0 10px;"/>
+                  <p class="card-text">
+                    En este apartado, se podrá escoger la fecha en la que se desea ver el resumen de movimientos por NIT, además
+                    de la opción de graficar el resumen, y generar un PDF con la gráfica (para generar el PDF, se debe generar
+                    la gráfica primero, para verificar que existen movimientos en la fecha seleccionada).
+                  </p>
+                  <img src="{% static 'images/Ayuda/graficaIVA.png' %}" alt="Gráfica IVA" style="margin: 30px 0 10px; width: 100%;"/>
+                  <p class="card-text">
+                    Finalmente, por cada NIT registrado, se observará el IVA emitido en color verde, y el recibido en color azul.
+                  </p>
+                </div>
+            </div>
+          </div>
+
+        </div>
+        <div class="tab-pane fade" id="dropdown3">
+          
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Resumen por rango de fechas</h4>
+                  <p class="card-text">
+                    <hr/>Al seleccionar esta opción, se podrá elegir un rango de fechas por la cual se requiere filtrar los montos totales,
+                    luego, podrá elegir si desea ver los valores totales con o sin IVA incluido. Además, se podrá visualizar por cada 
+                    fecha que se encuentre dentro del rango elegido, el valor autorizado total (con o sin IVA).
+                  </p>
+                </div>
+            </div>
+          </div>
+          <div style="margin-top: 70px; text-align: center;">
+            <div class="card border-light mb-3" style="width: 80%; display:inline-block;">
+                <div class="card-header">Documentación</div>
+                <div class="card-body">
+                  <h4 class="card-title">Funciones</h4>
+                  <p class="card-text"><hr/></p>
+                  <img src="{% static 'images/Ayuda/fechasMontos.png' %}" alt="Fecha de Montos" style="margin: 10px 0 10px; width: 40%;"/>
+                  <p class="card-text">
+                    En este apartado, se podrá escoger el rango de la fecha en la que se desea ver el resumen de montos totales por fecha, y escoger visualizar
+                    los montos totales con o sin IVA. Además, tendrá la opción de graficar el resumen, y generar un PDF con la gráfica (para generar el PDF, se
+                    debe generar la gráfica primero, para verificar que existen movimientos en la fecha seleccionada).
+                  </p>
+                  <img src="{% static 'images/Ayuda/graficaMontos.png' %}" alt="Gráfica Montos" style="margin: 30px 0 10px; width: 100%;"/>
+                  <p class="card-text">
+                    Finalmente, por cada fecha que haya registrado movimientos, se observará el monto total en color verde.
+                  </p>
+                </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+{% endblock %}
