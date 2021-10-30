@@ -55,8 +55,13 @@ def actualizar_aprobaciones():
 
     return jsonify({'autorizaciones': len(autorizaciones_global)})
 
-def is_number(caracter):
+def is_number_0_9(caracter):
     if ord(caracter) >= 48 and ord(caracter) <= 57:
+        return True
+    return False
+
+def is_number_1_9(caracter):
+    if ord(caracter) >= 49 and ord(caracter) <= 57:
         return True
     return False
     
@@ -105,86 +110,105 @@ def carga_archivo():
                         lexema_actual = ""
                         estado = "q2"
                 elif estado == "q2":
-                    if is_number(caracter):
+                    if caracter == "0":
                         lexema_actual += caracter
                         estado = "q3"
+                    if caracter == "1" or caracter == "2":
+                        lexema_actual += caracter
+                        estado = "q4"
+                    if caracter == "3":
+                        lexema_actual += caracter
+                        estado = "q5"
                     elif ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32:
                         pass
                 elif estado == "q3":
-                    if is_number(caracter):
+                    if is_number_1_9(caracter):
                         lexema_actual += caracter
-                        estado = "q4"
+                        estado = "q6"
                 elif estado == "q4":
-                    if caracter == "/":
-                        dia = lexema_actual
-                        lexema_actual = ""
-                        estado = "q5"
+                    if is_number_0_9(caracter):
+                        lexema_actual += caracter
+                        estado = "q6"
                 elif estado == "q5":
-                    if is_number(caracter):
+                    if caracter == "1" or caracter == "0":
                         lexema_actual += caracter
                         estado = "q6"
                 elif estado == "q6":
-                    if is_number(caracter):
-                        lexema_actual += caracter
+                    if caracter == "/":
+                        dia = lexema_actual
+                        lexema_actual = ""
                         estado = "q7"
                 elif estado == "q7":
-                    if caracter == "/":
-                        mes = lexema_actual
-                        lexema_actual = ""
+                    if caracter == "0":
+                        lexema_actual += caracter
                         estado = "q8"
-                elif estado == "q8":
-                    if is_number(caracter):
+                    if caracter == "1":
                         lexema_actual += caracter
                         estado = "q9"
+                elif estado == "q8":
+                    if is_number_1_9(caracter):
+                        lexema_actual += caracter
+                        estado = "q10"
                 elif estado == "q9":
-                    if is_number(caracter):
+                    if caracter == "1" or caracter == "2":
                         lexema_actual += caracter
                         estado = "q10"
                 elif estado == "q10":
-                    if is_number(caracter):
-                        lexema_actual += caracter
+                    if caracter == "/":
+                        mes = lexema_actual
+                        lexema_actual = ""
                         estado = "q11"
                 elif estado == "q11":
-                    if is_number(caracter):
+                    if caracter == "2":
                         lexema_actual += caracter
                         estado = "q12"
                 elif estado == "q12":
-                    if ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32:
-                        year = lexema_actual
-                        lexema_actual = ""
+                    if is_number_0_9(caracter):
+                        lexema_actual += caracter
                         estado = "q13"
                 elif estado == "q13":
-                    if is_number(caracter):
+                    if is_number_0_9(caracter):
                         lexema_actual += caracter
                         estado = "q14"
                 elif estado == "q14":
-                    if is_number(caracter):
+                    if is_number_0_9(caracter):
                         lexema_actual += caracter
                         estado = "q15"
                 elif estado == "q15":
-                    if caracter == ":":
-                        lexema_actual += caracter
+                    if ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32:
+                        year = lexema_actual
+                        lexema_actual = ""
                         estado = "q16"
                 elif estado == "q16":
-                    if is_number(caracter):
+                    if is_number_0_9(caracter):
                         lexema_actual += caracter
                         estado = "q17"
                 elif estado == "q17":
-                    if is_number(caracter):
+                    if is_number_0_9(caracter):
                         lexema_actual += caracter
                         estado = "q18"
                 elif estado == "q18":
-                    if ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32:
-                        lexema_actual += caracter
-                        estado = "q19"
-                    elif is_letter(caracter):
+                    if caracter == ":":
                         lexema_actual += caracter
                         estado = "q19"
                 elif estado == "q19":
+                    if is_number_0_9(caracter):
+                        lexema_actual += caracter
+                        estado = "q20"
+                elif estado == "q20":
+                    if is_number_0_9(caracter):
+                        lexema_actual += caracter
+                        estado = "q21"
+                elif estado == "q21":
+                    if ord(caracter) == 9 or ord(caracter) == 10 or ord(caracter) == 32 or is_letter(caracter):
+                        lexema_actual += caracter
+                        estado = "q22"
+                elif estado == "q22":
                     if is_letter(caracter):
                         lexema_actual += caracter
                     elif caracter == ".":
                         lexema_actual += caracter
+
             hora_completa = lexema_actual.lower()
             referencia = solicitud.find('REFERENCIA').text.replace(' ', '')
             nit_emisor = solicitud.find('NIT_EMISOR').text.replace(' ', '').replace('-', '')
