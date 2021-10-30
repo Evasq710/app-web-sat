@@ -25,6 +25,7 @@ urlpatterns = [
     path('peticion/resumen_iva/', peticion_resumen_iva),
     path('peticion/resumen_fechas/', peticion_resumen_fechas),
     path('ayuda/documentacion/', ayuda_documentacion),
+    path('ayuda/estudiante/', ayuda_estudiante),
 
     path('saludo/',saludo),
     path('edad/<int:edad>/<int:agno>/', calcularEdad)

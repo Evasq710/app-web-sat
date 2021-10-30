@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+    <h1>Información del estudiante desarrollador</h1>
+
+    
+    <div style="margin-top: 70px; text-align: center;">
+        <div class="card border-info mb-3" style="width: 80%; display:inline-block;">
+            <div class="card-header">Datos</div>
+            <div class="card-body">
+                <img src="{% static 'images/Ayuda/Foto.jpg' %}" alt="Foto Estudiante" style="width: 20%; margin-bottom: 20px;" />
+                <h4 class="card-title">Elías Abraham Vasquez Soto</h4>
+                <h4 class="card-title">201900131</h4><hr/>
+                <h4 class="card-title">Estudiante de Ingeniería en Ciencias y Sistemas</h4>
+                <h4 class="card-title">Universidad de San Carlos de Guatemala</h4><hr/>
+                <h4 class="card-title">Página para visualizar curriculum</h4>
+                <h4 class="card-title"><a href="https://evasq710.github.io/IPC2_Practica2_201900131/">https://evasq710.github.io/IPC2_Practica2_201900131/</a></h4><hr/>
+            </div>
+        </div>
+    </div>
+    
+
+{% endblock %}
