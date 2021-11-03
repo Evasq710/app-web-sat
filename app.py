@@ -150,7 +150,7 @@ def carga_archivo():
                         lexema_actual += caracter
                         estado = "q10"
                 elif estado == "q9":
-                    if caracter == "1" or caracter == "2":
+                    if caracter == "0" or caracter == "1" or caracter == "2":
                         lexema_actual += caracter
                         estado = "q10"
                 elif estado == "q10":
