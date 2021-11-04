@@ -139,6 +139,37 @@
         }
     }
 
+    function generarPdf(){
+      try{
+        let ventana = window.open('', '', 'height=700,width=700');
+        let style = `<style>
+          body {text-align: center; margin: 0;}
+          div {text-align: center; margin: 0;}
+          .acordeon {margin: 50px 0 40px 0}
+          table {width: 100%; font: 18px Helvetica;}";
+          table tr {border: solid 2px #000; padding: 5px 3px;}
+          h2 {background: #0B1160; padding: 5px 0 5px 0}
+          button {background: #0B1160; color: white;}
+        </style>`
+        ventana.document.write('<html><head>');
+        ventana.document.write('<title>Consulta de Datos</title>');
+        ventana.document.write(style);
+        ventana.document.write('</head>');
+        ventana.document.write('<body>');
+        ventana.document.write('<h1 style="margin-top: 40px; font: Helvetica;">Consulta de Datos - Autorizaciones</h1>');
+        ventana.document.write('<div class="acordeon">\n' + acordeonFechas.innerHTML + '\n</div>')
+        ventana.document.write('<br>')
+        ventana.document.write('<p><i>PROYECTO 3 - Elías Abraham Vasquez Soto</i></p>')
+        ventana.document.write('</body></html>');
+        ventana.document.close()
+        ventana.print()
+        ventana.close()
+      } catch(error) {
+        console.log(error);
+        alert("Ocurrió un error en la generación del PDF (Ver consola)")
+      }
+    }
+
     function resetAutorizaciones(){
         try {
             let cadenaHTML = ""
